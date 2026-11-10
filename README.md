@@ -3,6 +3,7 @@
 피그마 `4-2 UXUI` 파일의 11주차 디자인(`11주_화면 수정`)을 기준으로 만든 클릭형 프로토타입입니다. iPhone 15 Pro(393×852) 크기로 보입니다.
 
 ## 보는 방법
+- 바로 보기: https://yujin-jang123.github.io/jarip-prototype/ (휴대폰은 `docs/prototype-qr.png` QR을 찍으면 돼요)
 - `index.html`을 브라우저로 열면 바로 실행돼요. 외부 서버나 설치가 필요 없어요.
 - 오른쪽 화면 목록에서 피그마 프레임 ID(A-0, B-1-1 …)로 바로 이동할 수 있어요.
 - 맨 아래 '진행 기록 지우고 처음부터'를 누르면 처음 상태로 돌아가요.
@@ -12,8 +13,7 @@
 |---|---|
 | `index.html` | 완성된 프로토타입 (이미지 포함 단일 파일) |
 | `src/app.tpl.html` | 화면·스타일·동작 원본 |
-| `src/assets.json` | 피그마에서 내보낸 이미지·아이콘 |
-| `src/build.py` | 원본 + 이미지를 합쳐 `index.html`을 다시 만드는 스크립트 |
+| `src/build.py` | 원본에 `index.html` 속 이미지 묶음을 합쳐 `index.html`을 다시 만드는 스크립트 |
 | `figma-plugin/` | 컴포넌트 정리·에셋 내보내기에 쓴 피그마 플러그인 코드 |
 | `docs/prototype-qr.png` | 휴대폰으로 열기 위한 QR |
 
