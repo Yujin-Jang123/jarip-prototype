@@ -27,6 +27,7 @@ HEAD = """<!doctype html>
 <link rel="icon" type="image/svg+xml" href="icons/app-logo.svg">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<style>.panel { display: none !important; }</style>
 </head>
 <body>
 """

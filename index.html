@@ -11,6 +11,7 @@
 <link rel="icon" type="image/svg+xml" href="icons/app-logo.svg">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<style>.panel { display: none !important; }</style>
 <title>자립 식물 앱 프로토타입</title>
 </head>
 <body>
@@ -546,7 +547,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
   .petals { width: 100%; height: 100%; transform: none; border-radius: 0; }
   .phone { width: 100%; height: 100dvh; transform: none; border-radius: 0; box-shadow: none; }
   .phone .status, .phone .home-ind { visibility: hidden; height: 12px; }
-  .panel { width: auto; max-height: none; padding: 24px max(16px, env(safe-area-inset-left, 0px)) 32px; background: var(--stage); }
+  .panel { display: none; }
 }
 </style>
 
