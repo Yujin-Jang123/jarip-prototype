@@ -16,6 +16,7 @@
 | `src/build.py` | 원본에 `index.html` 속 이미지 묶음을 합쳐 `index.html`을 다시 만드는 스크립트 |
 | `figma-plugin/` | 컴포넌트 정리·에셋 내보내기에 쓴 피그마 플러그인 코드 |
 | `docs/prototype-qr.png` | 휴대폰으로 열기 위한 QR |
+| `icons/`, `manifest.webmanifest` | 앱 아이콘(피그마 11주차-기타 app logo). 휴대폰에서 '홈 화면에 추가'하면 이 아이콘으로 저장돼요 |
 
 ## 다시 빌드
 ```bash

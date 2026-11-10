@@ -14,5 +14,24 @@ else:
     start = html.index('const A = ') + len('const A = ')
     end = html.index(';\nconst $ = ', start)
     assets = html[start:end]
-(root / 'index.html').write_text(tpl.replace('%ASSETS%', assets, 1), encoding='utf-8')
+HEAD = """<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3766FA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="이은">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="icons/app-logo.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+"""
+body = tpl.replace('%ASSETS%', assets, 1)
+t0, t1 = body.find('<title>'), body.find('</title>') + len('</title>')
+title, body = (body[t0:t1], body[:t0] + body[t1:]) if t0 >= 0 else ('<title>이은</title>', body)
+(root / 'index.html').write_text(HEAD.replace('</head>', title + '\n</head>') + body + '\n</body>\n</html>\n', encoding='utf-8')
 print('index.html 생성 완료')
