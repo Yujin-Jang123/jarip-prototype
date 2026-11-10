@@ -161,7 +161,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 @keyframes sp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sp-shrink { to { transform: translateY(-59px) scale(.517); } }
 @media (prefers-reduced-motion: reduce) { .splash-art, .splash-art img, .splash-copy { animation-duration: .01s !important; animation-delay: 0s !important; } }
-.login-top { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 91px; }
+.login-top { display: flex; flex-direction: column; align-items: center; text-align: center; flex: none; }
+/* 높이가 852보다 작은 휴대폰에서도 스크롤 없이: 디자인 여백(91·90)을 같은 비율로 줄여요 */
+.fit-col { display: flex; flex-direction: column; } .fit-col > * { flex-shrink: 0; }
+.fit-sp { flex: 0 1 0; min-height: 12px; }
+.fit-col > .fit-sp { flex-shrink: 1; flex-basis: 0; }
 .login-top img { width: 159px; height: 142px; }
 .sprout-pop { transform-origin: 50% 98%; animation: sprout-pop 1s cubic-bezier(.3,.9,.35,1) .2s both; }
 .phone.still .sprout-pop { animation: none; }
@@ -704,9 +708,9 @@ const SCREENS = {};
 
 // A
 SCREENS.splash = () => `<section class="view splash-v">${status(true)}<div class="splash-art" aria-hidden="true"><img class="lw" src="${A.splashWhite}" alt=""><img class="lg" src="${A.splash1}" alt=""></div><div class="splash-copy"><b>이은</b><span>오늘의 작은 실천이 나를 키워요</span></div><div style="margin-top:auto">${homeInd(true)}</div></section>`;
-SCREENS.login = (p) => `<section class="view">${status()}<div class="scroll fade">
-  <div class="login-top"><img class="sprout-pop" src="${A.sproutNew}" alt=""><h1 class="h1" style="margin-top:32px">꽃을 피워볼까요?</h1><p class="sub" style="margin-top:8px">간편 로그인으로 바로 시작해요</p></div>
-  <div style="height:52px;margin-top:90px">${p.fail ? `<div class="err" role="alert"><img src="${A.warnLine}" alt=""><span>로그인이 완료되지 않았어요</span><button type="button" data-act="retry">다시 시도</button></div>` : ''}</div>
+SCREENS.login = (p) => `<section class="view">${status()}<div class="scroll fade fit-col">
+  <div class="fit-sp" style="flex-grow:91"></div><div class="login-top"><img class="sprout-pop" src="${A.sproutNew}" alt=""><h1 class="h1" style="margin-top:32px">꽃을 피워볼까요?</h1><p class="sub" style="margin-top:8px">간편 로그인으로 바로 시작해요</p></div>
+  <div class="fit-sp" style="flex-grow:90"></div><div style="height:52px;flex:none">${p.fail ? `<div class="err" role="alert"><img src="${A.warnLine}" alt=""><span>로그인이 완료되지 않았어요</span><button type="button" data-act="retry">다시 시도</button></div>` : ''}</div>
   <div class="socials">
     <button type="button" class="social naver" data-act="login"><span>N</span>네이버로 시작하기</button>
     <button type="button" class="social kakao" data-act="login"><span>K</span>카카오로 시작하기</button>
