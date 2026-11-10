@@ -1,0 +1,8 @@
+{
+  "name": "IA 10주 정리 (Claude)",
+  "id": "ia-10w-rename-claude",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page"
+}
