@@ -133,11 +133,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .h1 { font-size: 28px; line-height: 40px; font-weight: 600; color: var(--ink); margin: 0; text-wrap: balance; }
 .sub { font-size: 16px; line-height: 24px; color: var(--ink-sub); margin: 0; }
 .view.splash-v { background: var(--primary); }
-.splash-art { position: absolute; left: 80px; top: 329px; width: 232px; height: 222px; animation: sp-shrink .7s cubic-bezier(.3,.7,.2,1) 1.6s both; }
+.splash-art { position: absolute; left: calc(50% - 116px); top: calc(51.64% - 111px); width: 232px; height: 222px; animation: sp-shrink .7s cubic-bezier(.3,.7,.2,1) 1.6s both; }
 .splash-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .splash-art .lg { animation: sp-rise .7s cubic-bezier(.22,.8,.3,1) .15s both; }
 .splash-art .lw { animation: sp-rise .7s cubic-bezier(.22,.8,.3,1) .7s both; }
-.splash-copy { position: absolute; left: 0; right: 0; top: 472px; text-align: center; color: #F7F8FA; animation: sp-rise .6s cubic-bezier(.22,.8,.3,1) 1.95s both; }
+.splash-copy { position: absolute; left: 0; right: 0; top: calc(51.64% + 32px); text-align: center; color: #F7F8FA; animation: sp-rise .6s cubic-bezier(.22,.8,.3,1) 1.95s both; }
 .splash-copy b { display: block; font-size: 32px; line-height: 40px; font-weight: 600; }
 .splash-copy span { display: block; margin-top: 8px; font-size: 16px; line-height: 24px; color: #DAE5FF; }
 @keyframes sp-rise { from { opacity: 0; transform: translateY(28px); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
@@ -645,7 +645,8 @@ const fresh = () => ({
   profile: { name: '김이음', photo: null }
 });
 let S = fresh();
-const load = () => { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.todos) S = Object.assign(fresh(), s); } catch (e) {} };
+// 새로고침하면 항상 처음 상태에서 시작 (이전 진행 기록은 지움)
+const load = () => { try { localStorage.removeItem(KEY); } catch (e) {} };
 const ME = () => (S.profile && S.profile.name) || '김이음';
 const meImg = () => (S.profile && S.profile.photo) || A.profile;
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
