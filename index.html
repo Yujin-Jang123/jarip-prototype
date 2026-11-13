@@ -64,6 +64,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .home-ind.light i { background: #fff; }
 .bottom { flex: none; padding: 16px 24px 0; }
 .fade { animation: fade .26s ease both; }
+.phone canvas.confetti { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40; }
 .phone.still .fade { animation: none; }
 @keyframes fade { from { opacity: .001; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .fade, .sheet, .scrim { animation: none !important; transition: none !important; } }
@@ -958,6 +959,36 @@ const petalsEl = $('#petals');
 function syncPetals() { const on = cur && cur.screen === 'home'; petalsEl.hidden = !on; if (!on) return;
   const pink = S.mission.done && S.mission.result === 'c';
   petalsEl.querySelectorAll('.pc').forEach((p, k) => p.setAttribute('fill', pink && k % 4 === 1 ? '#F7A3C2' : p.dataset.c)); }
+/* ===== 컨페티 ===== */
+const CONF_C = ['#3766FA', '#91B6FF', '#00C853', '#7BE495', '#FFD24C', '#FF8FB1', '#FFFFFF', '#5B8CF0'];
+function confetti(opt) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const W = phone.clientWidth, H = phone.clientHeight, dpr = (window.devicePixelRatio || 1) * Math.max(1, SC);
+  const cv = document.createElement('canvas'); cv.className = 'confetti'; cv.width = W * dpr; cv.height = H * dpr; cv.setAttribute('aria-hidden', 'true');
+  phone.appendChild(cv); const cx = cv.getContext('2d'); cx.scale(dpr, dpr);
+  const P = []; const rnd = (a, b) => a + Math.random() * (b - a);
+  const add = (x, y, ang, spd, n, size) => { for (let i = 0; i < n; i++) { const a = ang + rnd(-opt.spread, opt.spread), s = spd * rnd(.55, 1.15);
+    P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, w: rnd(size[0], size[1]), h: rnd(size[0], size[1]) * rnd(.4, .9), r: rnd(0, 6.28), vr: rnd(-.25, .25), f: rnd(0, 6.28), c: CONF_C[(Math.random() * CONF_C.length) | 0], round: Math.random() < .25, life: 0 }); } };
+  opt.emit(add);
+  const max = opt.life, t0 = performance.now(); let last = t0;
+  const step = (now) => { const dt = Math.min(2.5, (now - last) / 16.67); last = now; const el = now - t0; cx.clearRect(0, 0, W, H); let alive = 0;
+    for (const p of P) { p.life += dt * 16.67; p.vx *= Math.pow(opt.drag, dt); p.vy = p.vy * Math.pow(opt.drag, dt) + opt.g * dt; p.x += (p.vx + Math.sin(p.f) * opt.wobble) * dt; p.y += p.vy * dt; p.r += p.vr * dt; p.f += .12 * dt;
+      const a = Math.max(0, 1 - Math.max(0, p.life - (max - opt.fade)) / opt.fade); if (a <= 0 || p.y > H + 20) continue; alive++;
+      cx.save(); cx.globalAlpha = a; cx.translate(p.x, p.y); cx.rotate(p.r); cx.scale(1, Math.cos(p.f * 1.3)); cx.fillStyle = p.c;
+      if (p.c === '#FFFFFF') { cx.strokeStyle = 'rgba(55,102,250,.35)'; cx.lineWidth = .8; }
+      if (p.round) { cx.beginPath(); cx.arc(0, 0, p.w / 2.4, 0, 6.29); cx.fill(); } else { cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); if (p.c === '#FFFFFF') cx.strokeRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+      cx.restore(); }
+    if (alive && el < max + 200 && cv.isConnected) requestAnimationFrame(step); else cv.remove(); };
+  requestAnimationFrame(step); }
+// 화면 전체: 아래 양쪽에서 쏘아 올리고 식물 자리에서 한 번 더 터짐
+function confettiBig() { const W = phone.clientWidth, H = phone.clientHeight;
+  confetti({ spread: .38, g: .16, drag: .985, wobble: .6, life: 4200, fade: 1200, emit: add => {
+    add(-10, H * .78, -1.05, 21, 70, [7, 12]); add(W + 10, H * .78, -2.09, 21, 70, [7, 12]);
+    add(W / 2, H * .33, -1.57, 13, 0, [6, 10]); } });
+  setTimeout(() => confetti({ spread: 3.14, g: .14, drag: .975, wobble: .5, life: 3600, fade: 1100, emit: add => add(W / 2, H * .3, -1.57, 11, 90, [6, 11]) }), 120); }
+// 버튼 근처에서만 작게
+function confettiSmall(el) { const pr = phone.getBoundingClientRect(), r = el.getBoundingClientRect(); const x = (r.left + r.width / 2 - pr.left) / SC, y = (r.top + r.height * .32 - pr.top) / SC;
+  confetti({ spread: 1.25, g: .22, drag: .93, wobble: .3, life: 900, fade: 450, emit: add => add(x, y, -1.57, 7.5, 34, [4, 7]) }); }
 let lastScreen = null;
 function render() {
   const fn = SCREENS[cur.screen];
@@ -993,6 +1024,7 @@ function wireSheet() { const sh = $('.sheet', phone); if (!sh) return; let y0 = 
   sh.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true); }
 function wire() {
   wireSheet();
+  if (cur.screen === 'mDone' && S.mission.result === 's' && !phone.classList.contains('still')) setTimeout(() => { if (cur.screen === 'mDone') confettiBig(); }, 1000);
   const pn = $('#pf-name', phone); if (pn) pn.addEventListener('input', () => { ui.pd.name = pn.value; $('#pf-cnt', phone).textContent = `${pn.value.length} / 10`; $('#pf-save', phone).disabled = !pn.value.trim(); });
   const pfF = $('#pf-file', phone); if (pfF) pfF.addEventListener('change', () => { const f = pfF.files && pfF.files[0]; if (!f) return; const img = new Image(); const u = URL.createObjectURL(f);
     img.onload = () => { const s = Math.min(img.width, img.height), c = document.createElement('canvas'); c.width = c.height = 360; c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 360, 360); URL.revokeObjectURL(u); ui.pd.photo = c.toDataURL('image/jpeg', .85); render(); };
@@ -1051,7 +1083,7 @@ const ACT = {
   'm-pick': (el) => { S.mission.pick = +el.dataset.i; save(); render(); },
   'm-change': () => { if (S.mission.done) { toast('이미 기록한 미션은 바꿀 수 없어요'); return; } S.mission = { pick: null, result: null, photo: null, note: '', pub: true, done: false }; save(); render(); },
   'm-record': () => go('mRecord'),
-  'm-result': (el) => { const prev = S.mission.result, r = el.dataset.r; S.mission.result = r; save(); render(); if (prev === r) return; const c = $(`.rcard[data-r="${r}"]`, phone); if (!c) return; c.setAttribute('aria-pressed', 'false'); c.offsetWidth; requestAnimationFrame(() => c.setAttribute('aria-pressed', 'true')); },
+  'm-result': (el) => { const prev = S.mission.result, r = el.dataset.r; S.mission.result = r; save(); render(); if (prev === r) return; const c = $(`.rcard[data-r="${r}"]`, phone); if (!c) return; c.setAttribute('aria-pressed', 'false'); c.offsetWidth; requestAnimationFrame(() => c.setAttribute('aria-pressed', 'true')); if (r === 's') confettiSmall(c); },
   'pf-edit': () => { ui.pd = null; openOv('profile'); },
   'pf-reset': () => { ui.pd.photo = null; render(); },
   'pf-save': () => { const n = ui.pd.name.trim(); if (!n) return; S.profile = { name: n, photo: ui.pd.photo }; ui.pd = null; save(); closeOv(); toast('프로필을 바꿨어요.'); },
