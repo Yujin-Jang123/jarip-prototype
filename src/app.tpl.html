@@ -730,7 +730,8 @@ SCREENS.result = (p) => { const t = p.t ?? S.type, T = TYPES[t]; const picked = 
 const todayTodos = () => S.todos.filter(t => t.date === TODAY);
 const meta = (t) => [t.time, t.rep === '요일 선택' ? t.days.map(d => WD[d]).join(' · ') : (t.rep === '안 함' ? '' : t.rep)].filter(Boolean).join(' · ');
 SCREENS.home = () => { const tt = todayTodos(), dn = tt.filter(t => t.done).length, m = S.mission; const mDone = m.done ? 1 : 0; const pct = (mDone + dn) / (1 + tt.length) * 100;
-  const plant = m.done && m.result === 'c' ? A.hydPink : A.hydBlue;
+  // 미션 완료 후에는 완료 화면에서 바뀐 식물 그대로: 성공=봉오리가 핀 수국, 도전=분홍 꽃 수국
+  const plant = m.done ? (m.result === 'c' ? A.hydPink : A.hydBlue2) : A.hydBlue;
   const missionHtml = m.pick === null
     ? `<div class="carousel" id="carousel">${MISSIONS.map((x, i) => `<div class="mc"><span class="tag">추천 ${i + 1}</span><h3>${x.title}</h3><p>${x.desc}</p><button type="button" class="go" data-act="m-pick" data-i="${i}">이 미션으로 할게요</button></div>`).join('')}</div><div class="dots" id="dots">${MISSIONS.map((_, i) => `<i class="${i === 0 ? 'on' : ''}"></i>`).join('')}</div>`
     : `<div class="mc sel"><span class="tag">내가 고른 미션</span><h3>${MISSIONS[m.pick].title}</h3><p>${MISSIONS[m.pick].desc}</p>${m.done
@@ -739,7 +740,7 @@ SCREENS.home = () => { const tt = todayTodos(), dn = tt.filter(t => t.done).leng
   return `<section class="view home2">
   <div class="scroll" style="position:absolute;inset:0"><div class="hero">
     <div class="hhdr"><div class="name">${esc(ME())} <span class="badge">${TYPES[S.type].name}</span></div><button type="button" class="iconbtn" data-act="noti" aria-label="알림">${I.bellHero(S.noti.some(Boolean))}</button></div>
-    <img class="plant" src="${plant}" alt="${m.done && m.result === 'c' ? '분홍 꽃이 핀 수국' : '파란 수국'}">
+    <img class="plant" src="${plant}" alt="${m.done ? (m.result === 'c' ? '분홍 꽃이 핀 수국' : '봉오리가 핀 파란 수국') : '파란 수국'}">
     <div class="prog"><div class="top">오늘의 진행도 <span>미션 ${mDone}/1 · 일정 ${dn}/${tt.length}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>
   </div>
   <div class="sec-hd" style="margin-top:32px"><h2>오늘의 미션</h2>${m.pick === null ? '' : `<button type="button" class="pill-b" data-act="m-change">바꾸기 ${I.chev('#EFF4FF')}</button>`}</div>
