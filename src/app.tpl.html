@@ -139,7 +139,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .splash-art .lg { animation: sp-rise .7s cubic-bezier(.22,.8,.3,1) .15s both; }
 .splash-art .lw { animation: sp-rise .7s cubic-bezier(.22,.8,.3,1) .7s both; }
 .splash-copy { position: absolute; left: 0; right: 0; top: calc(51.64% + 32px); text-align: center; color: #F7F8FA; animation: sp-rise .6s cubic-bezier(.22,.8,.3,1) 1.95s both; }
-.splash-copy b { display: block; font-size: 32px; line-height: 40px; font-weight: 600; }
+.splash-copy .wordmark { display: block; height: 40px; width: auto; margin: 0 auto; }
 .splash-copy span { display: block; margin-top: 8px; font-size: 16px; line-height: 24px; color: #DAE5FF; }
 @keyframes sp-rise { from { opacity: 0; transform: translateY(28px); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
 @keyframes sp-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -693,7 +693,7 @@ function toast(msg) { let t = $('.toast', phone); if (!t) { t = document.createE
 const SCREENS = {};
 
 // A
-SCREENS.splash = () => `<section class="view splash-v">${status(true)}<div class="splash-art" aria-hidden="true"><img class="lw" src="${A.splashWhite}" alt=""><img class="lg" src="${A.splash1}" alt=""></div><div class="splash-copy"><b>이은</b><span>오늘의 작은 실천이 나를 키워요</span></div><div style="margin-top:auto">${homeInd(true)}</div></section>`;
+SCREENS.splash = () => `<section class="view splash-v">${status(true)}<div class="splash-art" aria-hidden="true"><img class="lw" src="${A.splashWhite}" alt=""><img class="lg" src="${A.splash1}" alt=""></div><div class="splash-copy"><img class="wordmark" src="${A.wordmark}" alt="이은 (iewn)"><span>오늘의 작은 실천이 나를 키워요</span></div><div style="margin-top:auto">${homeInd(true)}</div></section>`;
 SCREENS.login = (p) => `<section class="view">${status()}<div class="scroll fade fit-col">
   <div class="fit-sp" style="flex-grow:91"></div><div class="login-top"><img class="sprout-pop" src="${A.sproutNew}" alt=""><h1 class="h1" style="margin-top:32px">꽃을 피워볼까요?</h1><p class="sub" style="margin-top:8px">간편 로그인으로 바로 시작해요</p></div>
   <div class="fit-sp" style="flex-grow:90"></div><div style="height:52px;flex:none">${p.fail ? `<div class="err" role="alert"><img src="${A.warnLine}" alt=""><span>로그인이 완료되지 않았어요</span><button type="button" data-act="retry">다시 시도</button></div>` : ''}</div>
@@ -773,7 +773,7 @@ SCREENS.mNote = () => { const m = S.mission, x = MISSIONS[m.pick ?? 0]; return `
   <div class="vis"><button type="button" data-act="m-pub" data-v="1" aria-pressed="${m.pub}">공개</button><button type="button" data-act="m-pub" data-v="0" aria-pressed="${!m.pub}">비공개</button></div>
   <p class="hint">공개하면 친구 피드에 보여요. 마이페이지의 내 기록 관리에서 언제든 바꿀 수 있어요.</p></div>
   <div class="bottom"><button type="button" class="primary" data-act="m-finish">다음</button></div>${homeInd()}</section>`; };
-SCREENS.mDone = () => { const s = S.mission.result === 's'; return `<section class="view">${status()}<div class="done-wrap fade"><div class="morph" role="img" aria-label="${s ? '파란 수국이 한층 더 피었어요' : '수국에 분홍 꽃이 피었어요'}"><div class="sway"><img class="m-from" src="${A.hydBlue}" alt=""><img class="m-to" src="${s ? A.hydBlue2 : A.hydPink}" alt=""></div></div><h1>${s ? '꽃이 자랐어요!' : '개성이 생겼어요!'}</h1><p class="sub" style="margin-top:12px">오늘의 작은 실천이 그대로 쌓였어요</p><span class="pill-info">오늘 자정 전까지 수정할 수 있어요</span></div>
+SCREENS.mDone = () => { const s = S.mission.result === 's'; return `<section class="view">${status()}<div class="done-wrap fade"><div class="morph" role="img" aria-label="${s ? '파란 수국이 한층 더 피었어요' : '수국에 분홍 꽃이 피었어요'}"><div class="sway"><img class="m-from" src="${A.hydBlue}" alt=""><img class="m-to" src="${s ? A.hydBlue2 : A.hydPink}" alt=""></div></div><h1>${s ? '꽃이 자랐어요!' : '개성이 생겼어요!'}</h1><p class="sub" style="margin-top:12px">${s ? '끝까지 해낸 오늘의 나, 정말 멋져요!<br>이 마음 그대로 내일도 함께 자라요' : '시도한 것만으로도 충분히 잘했어요.<br>다음 미션은 분명 해낼 수 있을 거예요'}</p><span class="pill-info">오늘 자정 전까지 수정할 수 있어요</span></div>
   <div class="bottom"><button type="button" class="primary" data-act="to-home">홈으로</button><button type="button" class="link-sub" data-act="m-edit">결과 수정하기</button></div>${homeInd()}</section>`; };
 
 // C
