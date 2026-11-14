@@ -140,7 +140,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .splash-art .lw { animation: sp-rise .7s cubic-bezier(.22,.8,.3,1) .7s both; }
 .splash-copy { position: absolute; left: 0; right: 0; top: calc(51.64% + 32px); text-align: center; color: #F7F8FA; animation: sp-rise .6s cubic-bezier(.22,.8,.3,1) 1.95s both; }
 .splash-copy .wordmark { display: block; height: 40px; width: auto; margin: 0 auto; }
-.splash-copy span { display: block; margin-top: 8px; font-size: 16px; line-height: 24px; color: #DAE5FF; }
+.splash-copy span { display: block; margin-top: 12px; font-size: 16px; line-height: 24px; color: #DAE5FF; }
 @keyframes sp-rise { from { opacity: 0; transform: translateY(28px); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
 @keyframes sp-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sp-shrink { to { transform: translateY(-59px) scale(.517); } }
@@ -773,7 +773,7 @@ SCREENS.mNote = () => { const m = S.mission, x = MISSIONS[m.pick ?? 0]; return `
   <div class="vis"><button type="button" data-act="m-pub" data-v="1" aria-pressed="${m.pub}">공개</button><button type="button" data-act="m-pub" data-v="0" aria-pressed="${!m.pub}">비공개</button></div>
   <p class="hint">공개하면 친구 피드에 보여요. 마이페이지의 내 기록 관리에서 언제든 바꿀 수 있어요.</p></div>
   <div class="bottom"><button type="button" class="primary" data-act="m-finish">다음</button></div>${homeInd()}</section>`; };
-SCREENS.mDone = () => { const s = S.mission.result === 's'; return `<section class="view">${status()}<div class="done-wrap fade"><div class="morph" role="img" aria-label="${s ? '파란 수국이 한층 더 피었어요' : '수국에 분홍 꽃이 피었어요'}"><div class="sway"><img class="m-from" src="${A.hydBlue}" alt=""><img class="m-to" src="${s ? A.hydBlue2 : A.hydPink}" alt=""></div></div><h1>${s ? '꽃이 자랐어요!' : '개성이 생겼어요!'}</h1><p class="sub" style="margin-top:12px">${s ? '끝까지 해낸 오늘이 나를 한 뼘 더 키웠어요.' : '시도한 오늘이 다음 성공의 밑거름이 될 거예요.'}</p><span class="pill-info">오늘 자정 전까지 수정할 수 있어요</span></div>
+SCREENS.mDone = () => { const s = S.mission.result === 's'; return `<section class="view">${status()}<div class="done-wrap fade"><div class="morph" role="img" aria-label="${s ? '파란 수국이 한층 더 피었어요' : '수국에 분홍 꽃이 피었어요'}"><div class="sway"><img class="m-from" src="${A.hydBlue}" alt=""><img class="m-to" src="${s ? A.hydBlue2 : A.hydPink}" alt=""></div></div><h1>${s ? '꽃이 자랐어요!' : '개성이 생겼어요!'}</h1><p class="sub" style="margin-top:12px">${s ? '끝까지 해낸 오늘이 나를 더 단단하게 키웠어요.' : '시도한 오늘이 다음 성공의 밑거름이 될 거예요.'}</p><span class="pill-info">오늘 자정 전까지 수정할 수 있어요</span></div>
   <div class="bottom"><button type="button" class="primary" data-act="to-home">홈으로</button><button type="button" class="link-sub" data-act="m-edit">결과 수정하기</button></div>${homeInd()}</section>`; };
 
 // C
