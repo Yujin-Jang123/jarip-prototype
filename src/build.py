@@ -33,6 +33,8 @@ HEAD = """<!doctype html>
 """
 body = tpl.replace('%ASSETS%', assets, 1)
 t0, t1 = body.find('<title>'), body.find('</title>') + len('</title>')
-title, body = (body[t0:t1], body[:t0] + body[t1:]) if t0 >= 0 else ('<title>이은</title>', body)
+# 홈 화면에 추가할 때 이름으로 쓰이므로 공개 사이트 제목은 앱 이름(iewn)으로
+body = body[:t0] + body[t1:] if t0 >= 0 else body
+title = '<title>iewn</title>'
 (root / 'index.html').write_text(HEAD.replace('</head>', title + '\n</head>') + body + '\n</body>\n</html>\n', encoding='utf-8')
 print('index.html 생성 완료')
