@@ -22,7 +22,7 @@ HEAD = """<!doctype html>
 <meta name="theme-color" content="#3766FA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="이은">
+<meta name="apple-mobile-web-app-title" content="iewn">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icons/app-logo.svg">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">

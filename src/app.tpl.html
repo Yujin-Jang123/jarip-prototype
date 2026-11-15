@@ -103,6 +103,16 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 @keyframes modal-in { from { opacity: .001; transform: translateY(calc(-50% + 6px)); } to { opacity: 1; transform: translateY(-50%); } }
 @keyframes up { from { transform: translateY(40px); opacity: .001; } to { transform: none; opacity: 1; } }
 .grab { width: 48px; height: 4px; border-radius: 4px; background: #8E95A3; margin: 0 auto 24px; flex: none; position: relative; }
+.twheel { position: relative; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; height: 120px; margin-top: 10px; border-radius: 16px; background: rgba(255,255,255,.7); padding: 0 12px; }
+.twheel::before { content: ''; position: absolute; left: 8px; right: 8px; top: 40px; height: 40px; border-radius: 10px; background: var(--primary-tint); border: 1px solid #BED2FF; pointer-events: none; }
+.twheel::after { content: ''; position: absolute; inset: 0; border-radius: 16px; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0) 34%, rgba(255,255,255,0) 66%, rgba(255,255,255,.9)); }
+.twheel.unset .wi[aria-selected="true"] { color: var(--ink-muted); }
+.wheel { position: relative; z-index: 1; height: 120px; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-padding-top: 40px; scrollbar-width: none; padding: 40px 0; touch-action: pan-y; cursor: grab; outline: none; overscroll-behavior: contain; }
+.wheel::-webkit-scrollbar { display: none; }
+.wheel .wi { height: 40px; display: grid; place-items: center; scroll-snap-align: start; font-size: 17px; color: var(--ink-muted); user-select: none; }
+.wheel .wi[aria-selected="true"] { color: var(--primary-deep); font-weight: 700; }
+.wheel:focus-visible { box-shadow: inset 0 0 0 2px var(--primary); border-radius: 10px; }
+.qdays { display: flex; justify-content: space-between; margin-top: 14px; }
 .grab::before { content: ''; position: absolute; left: -150px; right: -150px; top: -20px; bottom: -16px; }
 .sheet, .csheet { -webkit-user-select: none; user-select: none; } .sheet input, .sheet textarea { -webkit-user-select: text; user-select: text; }
 .sheet { touch-action: pan-x; } .sheet .body { touch-action: pan-y; } .sheet .grab, .sheet > h2 { cursor: grab; }
@@ -536,7 +546,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
   .phone-box { width: 100% !important; height: 100dvh !important; position: relative; top: 0; }
   .petals { width: 100%; height: 100%; transform: none; border-radius: 0; }
   .phone { width: 100%; height: 100dvh; transform: none; border-radius: 0; box-shadow: none; }
-  .phone .status, .phone .home-ind { visibility: hidden; height: 12px; }
+  .phone .home-ind { visibility: hidden; height: 12px; }
+  .phone .status { height: 12px; } .phone .status > * { visibility: hidden; }
   .panel { display: none; }
 }
 </style>
@@ -902,7 +913,7 @@ SCREENS.noti = () => `<section class="view">${status()}${hdr('알림')}<div clas
 const OV = {};
 OV.profile = () => { const d = ui.pd || (ui.pd = { name: ME(), photo: S.profile ? S.profile.photo : null }); const ok = d.name.trim().length >= 1;
   return `<div class="scrim" data-act="ov-close"></div><div class="sheet pf-sheet" role="dialog" aria-label="프로필 수정"><div class="grab"></div><h2>프로필 수정</h2><div class="body" style="display:grid;gap:24px;padding-bottom:8px">
-  <div class="av"><img id="pf-prev" src="${d.photo || A.profile}" alt="프로필 사진 미리보기"><div class="acts"><label>${IMG('addAlbum', 18, 18)}앨범에서 선택<input type="file" accept="image/*" id="pf-file"></label>${d.photo ? '<button type="button" data-act="pf-reset">기본 이미지로</button>' : ''}</div></div>
+  <div class="av"><img id="pf-prev" src="${d.photo || A.profile}" alt="프로필 사진 미리보기"><div class="acts"><label>${IMG('addAlbumBlue', 18, 18)}앨범에서 선택<input type="file" accept="image/*" id="pf-file"></label>${d.photo ? '<button type="button" data-act="pf-reset">기본 이미지로</button>' : ''}</div></div>
   <div><label class="field-label" for="pf-name">닉네임</label><div class="input"><input id="pf-name" maxlength="10" value="${esc(d.name)}" placeholder="닉네임을 입력해 주세요"><small id="pf-cnt" style="font-size:12px;color:var(--ink-muted);flex:none">${d.name.length} / 10</small></div><p class="hint" style="margin:8px 0 0">친구에게 보이는 이름이에요. 최대 10자까지 쓸 수 있어요.</p></div>
   <button type="button" class="primary" data-act="pf-save" id="pf-save" ${ok ? '' : 'disabled'}>저장하기</button></div>${homeInd()}</div>`; };
 let camStream = null, camFacing = 'environment';
@@ -912,10 +923,29 @@ async function camStart() { camStop(); const v = $('#cam-v', phone), msg = $('#c
   try { camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camFacing, width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
     if (!overlay || overlay.k !== 'camera') { camStop(); return; } v.srcObject = camStream; v.style.transform = camFacing === 'user' ? 'scaleX(-1)' : ''; if (msg) msg.remove(); }
   catch (err) { camStop(); overlay = null; render(); const f = $('#cam-file', phone); if (f) f.click(); else toast('카메라를 쓸 수 없어요. 앨범에서 골라 주세요.'); } }
+// 시간 휠: 오전/오후 · 시 · 분(5분 단위). 스크롤(또는 드래그)해서 고르면 바로 반영돼요.
+const WH = 40, MINS = Array.from({ length: 12 }, (_, i) => i * 5);
+const parseTime = (s) => { const m = /^(오전|오후)\s*(\d{1,2}):(\d{2})$/.exec(s || ''); if (!m) return { ap: 0, h: 9, mi: 0 }; return { ap: m[1] === '오후' ? 1 : 0, h: +m[2], mi: Math.round(+m[3] / 5) % 12 * 5 }; };
+const fmtTime = ({ ap, h, mi }) => `${ap ? '오후' : '오전'} ${h}:${String(mi).padStart(2, '0')}`;
+function timeWheel(s) { const v = parseTime(s);
+  const col = (k, items, idx, label) => `<div class="wheel" data-k="${k}" data-i="${idx}" role="listbox" aria-label="${label}" tabindex="0">${items.map((x, i) => `<div class="wi" role="option" aria-selected="${i === idx}">${x}</div>`).join('')}</div>`;
+  return `<div class="twheel${s ? '' : ' unset'}">${col('ap', ['오전', '오후'], v.ap, '오전 오후')}${col('h', Array.from({ length: 12 }, (_, i) => i + 1), v.h - 1, '시')}${col('mi', MINS.map(m => String(m).padStart(2, '0')), v.mi / 5, '분')}</div>${s ? '<button type="button" class="textlink" data-act="q-notime" style="display:block;margin:6px auto 0;font-size:13px">시간 없음으로</button>' : ''}`; }
+function wireWheels() { [...phone.querySelectorAll('.wheel')].forEach(w => { w.scrollTop = +w.dataset.i * WH; let tm, y0 = null, s0 = 0;
+  const commit = () => { const i = Math.max(0, Math.min(w.children.length - 1, Math.round(w.scrollTop / WH))); w.dataset.i = i; [...w.children].forEach((c, j) => c.setAttribute('aria-selected', j === i));
+    const g = k => +$(`.wheel[data-k="${k}"]`, phone).dataset.i; ui.qd.time = fmtTime({ ap: g('ap'), h: g('h') + 1, mi: MINS[g('mi')] });
+    const lab = $('#q-time-val', phone); if (lab) { lab.textContent = ui.qd.time; lab.style.color = 'var(--primary-deep)'; } $('.twheel', phone).classList.remove('unset'); };
+  w.addEventListener('scroll', () => { clearTimeout(tm); tm = setTimeout(commit, 110); });
+  w.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; y0 = e.clientY; s0 = w.scrollTop; w.style.scrollSnapType = 'none'; w.setPointerCapture(e.pointerId); e.stopPropagation(); });
+  w.addEventListener('pointermove', e => { if (y0 === null) return; w.scrollTop = s0 - (e.clientY - y0) / SC; });
+  const up = () => { if (y0 === null) return; y0 = null; const i = Math.round(w.scrollTop / WH); w.style.scrollSnapType = ''; w.scrollTo({ top: i * WH, behavior: 'smooth' }); };
+  w.addEventListener('pointerup', up); w.addEventListener('pointercancel', up);
+  w.addEventListener('keydown', e => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); w.scrollTo({ top: (Math.round(w.scrollTop / WH) + (e.key === 'ArrowDown' ? 1 : -1)) * WH, behavior: 'smooth' }); } }); }); }
 OV.quick = (p) => { const t = ui.qd || (ui.qd = { ...S.todos.find(x => x.id === p.id) }); return `<div class="scrim" data-act="ov-close"></div><div class="sheet" role="dialog" aria-label="일정 수정"><div class="grab"></div><h2 style="margin-bottom:16px">일정 수정</h2><div class="body">
   <label class="field-label" for="q-title" style="color:var(--ink-sub);font-size:16px;font-weight:600">제목</label><div class="input center" style="background:#fff"><input id="q-title" value="${esc(t.title)}"></div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px"><b style="font-size:20px;font-weight:600">시간</b><span>${t.time || '없음'}</span>${I.chev()}</div>
-  <div style="margin-top:16px;font-size:16px;font-weight:600;color:var(--ink-sub)">반복</div><div class="chips" style="margin-top:12px">${['안 함', '매일', '평일', '요일 선택'].map(r => `<button type="button" class="chip" data-act="q-rep" data-r="${r}" aria-pressed="${t.rep === r}">${r}</button>`).join('')}</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px"><b style="font-size:16px;font-weight:600;color:var(--ink-sub)">시간</b><span id="q-time-val" style="font-size:16px;font-weight:600;color:${t.time ? 'var(--primary-deep)' : 'var(--ink-muted)'}">${t.time || '없음'}</span></div>
+  ${timeWheel(t.time)}
+  <div style="margin-top:20px;font-size:16px;font-weight:600;color:var(--ink-sub)">반복</div><div class="chips" style="margin-top:12px">${['안 함', '매일', '평일', '요일 선택'].map(r => `<button type="button" class="chip" data-act="q-rep" data-r="${r}" aria-pressed="${t.rep === r}">${r}</button>`).join('')}</div>
+  ${t.rep === '요일 선택' ? `<div class="qdays" role="group" aria-label="반복 요일">${[1, 2, 3, 4, 5, 6, 0].map(d => `<button type="button" class="day" data-act="q-day" data-d="${d}" aria-pressed="${t.days.includes(d)}">${WD[d]}</button>`).join('')}</div>` : ''}
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 8px"><button type="button" class="secondary" data-act="q-del">삭제</button><button type="button" class="primary" style="height:52px" data-act="q-save">저장</button></div></div>${homeInd()}</div>`; };
 OV.repeat = () => `<div class="scrim"></div><div class="modal" role="dialog" aria-label="반복 일정 적용 범위"><h2>반복 일정이에요</h2><p>설정을 어디까지 바꿀까요?</p>
   <div role="radiogroup" style="display:grid;gap:12px;text-align:left">${['오늘만', '오늘 이후 전체'].map((l, i) => `<button type="button" class="opt" role="radio" aria-checked="${(ui.scope || 0) === i}" data-act="scope" data-i="${i}"><span class="radio"><i></i></span><span>${l}</span></button>`).join('')}</div>
@@ -942,7 +972,7 @@ const petalsEl = $('#petals');
   for (let k = 0; k < 12; k++) { const size = 10 + r() * 8, dur = 13 + r() * 8, c = PETAL_C[k % PETAL_C.length];
     h += `<div class="pf" style="left:${(3 + k * 8 + r() * 5).toFixed(1)}%;--dx:${Math.round(r() * 80 - 30)}px;animation-duration:${dur.toFixed(1)}s;animation-delay:${(-r() * dur).toFixed(1)}s;opacity:${(.65 + r() * .3).toFixed(2)}"><i style="--sw:${Math.round(14 + r() * 16)}px;animation-duration:${(3.6 + r() * 2.4).toFixed(1)}s"><svg width="${size.toFixed(0)}" height="${(size * 1.15).toFixed(0)}" viewBox="0 0 20 23" style="animation-duration:${(7 + r() * 5).toFixed(1)}s"><path class="pc" d="M10 1.5C14.8 4.8 18.5 9.6 18.5 14c0 4.4-3.8 7.5-8.5 7.5S1.5 18.4 1.5 14C1.5 9.6 5.2 4.8 10 1.5z" fill="${c}" data-c="${c}"/><path d="M10 6v12" stroke="#fff" stroke-opacity=".55" stroke-width="1" stroke-linecap="round"/></svg></i></div>`; }
   petalsEl.innerHTML = h; })();
-function syncPetals() { const on = cur && cur.screen === 'home'; petalsEl.hidden = !on; if (!on) return;
+function syncPetals() { const on = cur && cur.screen === 'home' && !overlay; petalsEl.hidden = !on; if (!on) return;
   const pink = S.mission.done && S.mission.result === 'c';
   petalsEl.querySelectorAll('.pc').forEach((p, k) => p.setAttribute('fill', pink && k % 4 === 1 ? '#F7A3C2' : p.dataset.c)); }
 /* ===== 컨페티 ===== */
@@ -1010,7 +1040,7 @@ function playGrow(box) { clearTimeout(growT); const imgs = [...box.querySelector
   show(); const step = () => { const last = i === imgs.length - 1; growT = setTimeout(() => { i = last ? 0 : i + 1; show(); step(); }, last ? 1800 : 1150); }; step(); }
 function wireSheet() { const sh = $('.sheet', phone); if (!sh) return; let y0 = null, dy = 0, moved = false;
   const sc = $('.scrim', phone);
-  sh.addEventListener('pointerdown', e => { if (e.button > 0) return; const inter = e.target.closest('input, textarea, select, [contenteditable]'); if (inter) return;
+  sh.addEventListener('pointerdown', e => { if (e.button > 0) return; const inter = e.target.closest('input, textarea, select, [contenteditable], .wheel'); if (inter) return;
     const body = $('.body', sh); if (body && body.contains(e.target) && body.scrollTop > 0) return;
     y0 = e.clientY; dy = 0; moved = false; sh.style.animation = 'none'; sh.style.transition = 'none'; });
   sh.addEventListener('pointermove', e => { if (y0 === null) return; const d = (e.clientY - y0) / SC;
@@ -1024,7 +1054,7 @@ function wireSheet() { const sh = $('.sheet', phone); if (!sh) return; let y0 = 
   sh.addEventListener('pointerup', end); sh.addEventListener('pointercancel', end);
   sh.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true); }
 function wire() {
-  wireSheet();
+  wireSheet(); wireWheels();
   // 식물이 하얗게 빛나며 바뀌기 시작하는 순간(0.75초)에 맞춰 터짐
   if (cur.screen === 'home' && S.mission.done && !overlay) { const g = fxGen; const loop = (first) => setTimeout(() => { if (g !== fxGen || cur.screen !== 'home') return; heroPuff(); loop(false); }, first ? 900 : 3000 + Math.random() * 2000); loop(true); }
   // 화면이 바뀌면(fxGen 증가) 예약된 효과는 취소돼요. 성공=컨페티, 도전=분홍 꽃잎만
@@ -1078,6 +1108,8 @@ const ACT = {
   't-toggle': (el) => { const t = S.todos.find(x => x.id === +el.dataset.id); t.done = !t.done; save(); render(); },
   't-quick': (el) => { ui.qd = null; openOv('quick', { id: +el.dataset.id }); },
   'q-rep': (el) => { ui.qd.rep = el.dataset.r; if (ui.qd.rep !== '요일 선택') ui.qd.days = []; else if (!ui.qd.days.length) ui.qd.days = [1, 3, 5]; render(); },
+  'q-day': (el) => { const d = +el.dataset.d, a = ui.qd.days; ui.qd.days = a.includes(d) ? a.filter(x => x !== d) : [...a, d].sort(); render(); },
+  'q-notime': () => { ui.qd.time = ''; render(); },
   'q-del': () => { const id = ui.qd.id; S.todos = S.todos.filter(x => x.id !== id); save(); closeOv(); toast('일정을 삭제했어요.'); },
   'q-save': () => { const orig = S.todos.find(x => x.id === ui.qd.id); if (orig.rep !== '안 함') { ui.pending = ui.qd; openOv('repeat'); } else { Object.assign(orig, ui.qd); save(); closeOv(); toast('저장했어요.'); } },
   scope: (el) => { ui.scope = +el.dataset.i; render(); },
