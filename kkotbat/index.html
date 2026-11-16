@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>꽃밭</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <h1 class="sr-only">꽃밭</h1>
+    <div class="topbar-right">
+      <p class="bloom-count" aria-live="polite"><strong id="bloomCount">0</strong>송이가 피었어요</p>
+      <button type="button" class="btn-outline" id="findMine">내 꽃 찾기</button>
+    </div>
+  </header>
+
+  <main class="viewport" id="viewport" tabindex="0" aria-label="꽃밭. 드래그하거나 방향키로 둘러볼 수 있어요">
+    <div class="world" id="world">
+      <div class="sky" id="sky"></div>
+      <canvas class="land" id="land" aria-hidden="true"></canvas>
+      <!-- 02 화면부터: 심어진 꽃이 여기에 들어감 -->
+      <div class="plot-layer" id="plots"></div>
+    </div>
+
+    <!-- 씨앗은 화면(뷰포트) 기준으로 떠다님 -->
+    <div class="seed-layer" id="seeds"></div>
+
+    <section class="empty-card" id="emptyState" aria-labelledby="emptyTitle">
+      <img class="empty-sprout" src="assets/plants/sprout-pointed-b.webp" alt="">
+      <h2 id="emptyTitle">아직 아무 꽃도 피지 않았어요</h2>
+      <p>떠다니는 씨앗을 눌러<br>이 풀밭의 첫 번째 꽃을 피워보세요</p>
+    </section>
+
+    <p class="hint-pill">드래그해서 둘러보고, 떠다니는 씨앗을 눌러보세요</p>
+
+    <!-- 03 씨앗 심기 · 이름 붙이기 -->
+    <div class="plant-overlay" id="plantOverlay" hidden>
+      <div class="plant-card" role="dialog" aria-modal="true" aria-labelledby="plantTitle" aria-describedby="plantDesc">
+        <div class="plant-stage" aria-hidden="true">
+          <span class="stage-mound"></span>
+          <img class="stage-sprout" id="plantSprout" src="" alt="">
+        </div>
+        <p class="sprout-tag" id="sproutTag" aria-live="polite">이름 없는 새싹</p>
+        <h2 id="plantTitle">씨앗이 심겼어요</h2>
+        <p class="plant-desc" id="plantDesc">새싹에 붙일 이름을 알려주세요.<br>꽃이 피면 꽃밭에 ‘이름의 꽃’으로 보여요.</p>
+        <form class="name-form" id="nameForm" novalidate>
+          <label for="sproutName">이름</label>
+          <input id="sproutName" type="text" maxlength="20" autocomplete="off" enterkeyhint="done" placeholder="예: 송이" aria-describedby="nameHint nameCount">
+          <div class="field-meta"><span id="nameHint">1~10자 · 나중에 바꿀 수 없어요</span><span id="nameCount">0 / 10</span></div>
+          <button type="submit" class="btn-primary" id="nameSubmit" disabled>이름 붙이고 키우기</button>
+          <button type="button" class="btn-text" id="plantCancel">다른 씨앗 고를래요</button>
+        </form>
+      </div>
+    </div>
+    <!-- 04 성장 미션 -->
+    <section class="grow" id="grow" hidden aria-labelledby="growTitle">
+      <div class="grow-inner">
+        <header class="grow-head" id="growHead">
+          <h2 id="growTitle">떠다니는 미션 중 4개를 골라주세요</h2>
+          <p id="growHint" aria-live="polite"></p>
+        </header>
+        <div class="grow-stage-wrap" id="growStageWrap">
+          <div class="grow-stage" id="growStage">
+            <span class="stage-hill" aria-hidden="true"></span>
+            <div class="plant-rig" id="plantRig" role="img"></div>
+          </div>
+          <p class="grow-tag" id="growTag"></p>
+        </div>
+        <div class="mission-layer" id="missions"></div>
+        <ol class="grow-slots" id="growSlots" aria-label="고른 미션 순서"></ol>
+        <div class="grow-actions" id="growActions">
+          <button type="button" class="btn-text" id="growReset" hidden>처음부터 다시 고르기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 개화 완료 -->
+    <section class="bloom" id="bloom" hidden aria-labelledby="bloomTitle">
+      <div class="petal-rain" id="petalRain" aria-hidden="true"></div>
+      <div class="bloom-inner">
+        <div class="bloom-stage" id="bloomStage">
+          <span class="stage-hill" aria-hidden="true"></span>
+          <div class="plant-rig" id="bloomRig" role="img" aria-label="완성된 꽃"></div>
+        </div>
+        <h2 id="bloomTitle"></h2>
+        <p class="bloom-sub">스스로 고르고 해낸 선택들이 이 꽃을 피웠어요</p>
+        <ul class="recipe" id="bloomRecipe" aria-label="내가 고른 선택"></ul>
+        <button type="button" class="btn-primary" id="bloomPlant">꽃밭에 심기</button>
+      </div>
+    </section>
+
+    <!-- 07 인사 남기기 (방명록) -->
+    <aside class="guest" id="guest" hidden aria-labelledby="guestTitle">
+      <div class="guest-head">
+        <div class="guest-thumb" aria-hidden="true"><span class="stage-hill"></span><div class="plant-rig" id="guestRig"></div></div>
+        <div class="guest-info">
+          <h2 id="guestTitle"></h2>
+          <p id="guestMeta"></p>
+        </div>
+        <button type="button" class="guest-close" id="guestClose" aria-label="인사 창 닫기">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+        </button>
+      </div>
+      <h3 class="guest-sub">받은 인사 <span id="guestCount">0</span></h3>
+      <ul class="guest-list" id="guestList"></ul>
+      <form class="note-form" id="noteForm" novalidate>
+        <div class="author-row" id="authorRow">
+          <label for="noteAuthor">내 이름 <span>(선택)</span></label>
+          <input id="noteAuthor" type="text" maxlength="20" autocomplete="off" placeholder="지나가던 정원사">
+        </div>
+        <p class="author-as" id="authorAs" hidden></p>
+        <label class="sr-only" for="noteText">인사 한 줄 남기기</label>
+        <div class="note-input">
+          <input id="noteText" type="text" maxlength="40" autocomplete="off" enterkeyhint="send" placeholder="따뜻한 인사 한 줄을 건네보세요" aria-describedby="noteCount">
+          <button type="submit" class="note-send" id="noteSubmit" disabled>건네기</button>
+        </div>
+        <div class="note-meta"><span>인사는 한 줄, 40자까지</span><span id="noteCount">0 / 40</span></div>
+      </form>
+    </aside>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
