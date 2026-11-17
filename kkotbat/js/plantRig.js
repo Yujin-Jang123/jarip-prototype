@@ -5,7 +5,7 @@
 //   0단계: 03에서 고른 새싹
 //   1번째 → 살짝 자란 세 잎 새싹 (키·굵기. 이후 단계에도 이어짐)
 //   2번째 → 잎이 늘어난 어린 식물 (잎 개수·형태)
-//   3번째 → 줄기 끝에 흰 꽃이 핌 (백합 · 작약 · 하늘빛 꽃 · 수국 중 하나, 한 송이)
+//   3번째 → 줄기 끝에 흰 꽃이 핌 (백합 · 작약 · 하늘빛 꽃 · 수국 · 데이지 중 하나, 한 송이)
 //   4번째 → 꽃에 색이 생김 (꽃잎을 실제로 다시 칠함. 노란 수술은 그대로)
 
 const P = 'assets/plants/';
@@ -45,6 +45,7 @@ const IMG = {
   'flower-head-lily':  { r: 0.8935 },
   'flower-head-peony': { r: 0.7786 },
   'flower-head-bell':  { r: 0.7595 },
+  'flower-head-daisy': { r: 437 / 480 },
 };
 
 // [너비, 가로 배율, 세로 배율] — 늘리지 않고 크기·굵기만 살짝 다르게
@@ -63,6 +64,7 @@ const BLOOM = [
   [['flower-head-peony', 0.84, 0, 0]],
   [['flower-head-bell', 0.84, 0, 0]],
   [['flower-head-blue', 0.86, 0, 0]],
+  [['flower-head-daisy', 0.86, 0, 0]],
 ];
 // 꽃 색: 산뜻하고 따뜻한 6색 [r, g, b]
 // 꽃 색: 꽃 가운데(inner) → 꽃잎 끝(outer)으로 번지는 그라디언트 6가지
@@ -70,7 +72,6 @@ export const PALETTE = [
   { name: '선셋', inner: [255, 222, 150], outer: [255, 104, 146] },
   { name: '피치', inner: [255, 236, 196], outer: [255, 140, 96] },
   { name: '레몬', inner: [255, 251, 196], outer: [255, 196, 30] },
-  { name: '라벤더', inner: [238, 222, 255], outer: [146, 116, 255] },
   { name: '체리블라썸', inner: [255, 232, 244], outer: [255, 100, 170] },
   { name: '오션', inner: [212, 240, 255], outer: [64, 146, 255] },
 ];
@@ -123,6 +124,10 @@ export function tinted(key, colorIndex) {
     const R = Math.max(cx, W - cx, cy, Hh - cy) * 0.95;
 
     const pal = white ? null : PALETTE[colorIndex];
+    // 원래 아주 밝은 꽃(데이지 등)은 색이 묻어나도록 밝기를 조금 내림
+    let sumL = 0, cnt = 0;
+    for (let i = 0; i < px.length; i += 64) if (px[i + 3] > 128) { sumL += hsl(px[i] / 255, px[i + 1] / 255, px[i + 2] / 255)[2]; cnt++; }
+    const dim = cnt && sumL / cnt > 0.88 ? 0.84 : 1;
     for (let i = 0; i < px.length; i += 4) {
       if (px[i + 3] < 8) continue;
       const r = px[i] / 255, g = px[i + 1] / 255, b = px[i + 2] / 255;
@@ -140,7 +145,7 @@ export function tinted(key, colorIndex) {
         const [H, S, tl] = hsl(tr, tg, tb);
         // 원래 그림(수국)의 밝기·채도를 그대로 살리고 색상만 바꿈 → 맑고 선명하게
         const o = hsl(r, g, b);
-        const l = Math.min(0.95, L * 0.8 + tl * 0.2 + 0.06);
+        const l = Math.min(0.95, (L * 0.8 + tl * 0.2 + 0.06) * dim);
         out = fromHsl(H, Math.min(1, Math.max(o[1], 0.82) * Math.min(1, S + 0.1)), l);
       }
       px[i] = out[0]; px[i + 1] = out[1]; px[i + 2] = out[2];
