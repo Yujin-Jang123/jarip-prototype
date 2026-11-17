@@ -3,7 +3,7 @@
 // 04에서 네 번째 미션을 고르면 이어짐: 큰 원 안에 완성된 꽃, 위에서 꽃잎이 흩날리고,
 // 이름과 '고른 순서(레시피)'를 보여준 뒤 '꽃밭에 심기' → 06
 
-import { renderRig } from './plantRig.js?v=1117h';
+import { renderRig } from './plantRig.js?v=1117i';
 
 const $ = (id) => document.getElementById(id);
 const PETAL_COLORS = ['#ffd1e3', '#ffe48a', '#cfe6ff', '#e4d4ff', '#ffffff', '#ffc6b0'];
