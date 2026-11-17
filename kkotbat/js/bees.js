@@ -5,29 +5,14 @@ const BASE = 2;
 const PER_FLOWERS = 5;
 const MAX = 8;
 
-function beeSVG(id) {
-  return `<svg viewBox="-34 -30 68 56" width="58" height="48" aria-hidden="true">
-    <defs>
-      <radialGradient id="by${id}" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff6c4"/><stop offset=".45" stop-color="#ffd23a"/><stop offset="1" stop-color="#f0a400"/></radialGradient>
-      <radialGradient id="bd${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#7a5236"/><stop offset="1" stop-color="#2e1d12"/></radialGradient>
-      <linearGradient id="bw${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#cfe8ff" stop-opacity=".55"/></linearGradient>
-      <clipPath id="bc${id}"><ellipse cx="2" cy="4" rx="17" ry="13"/></clipPath>
-    </defs>
-    <g class="bee-wing bee-wing-back"><path d="M-2 -6 C-12 -26 -30 -24 -26 -12 C-23 -4 -10 -3 -2 -4Z" fill="url(#bw${id})" stroke="#9cc7ea" stroke-width=".7"/><path d="M-4 -6 Q-14 -14 -24 -14" stroke="#9cc7ea" stroke-width=".5" fill="none"/></g>
-    <path d="M17 4 L24 6 L17 8Z" fill="#3a2516"/>
-    <ellipse cx="2" cy="4" rx="17" ry="13" fill="url(#by${id})"/>
-    <g clip-path="url(#bc${id})" fill="url(#bd${id})">
-      <path d="M-3 -10 C-6 -2 -6 10 -3 18 L3 18 C0 10 0 -2 3 -10Z"/>
-      <path d="M7 -10 C4 -2 4 10 7 18 L12 18 C9 10 9 -2 12 -10Z"/>
-    </g>
-    <ellipse cx="-3" cy="-2" rx="9" ry="4" fill="#fff" opacity=".35" transform="rotate(-12 -3 -2)"/>
-    <circle cx="-16" cy="1" r="9" fill="url(#bd${id})"/>
-    <circle cx="-19" cy="-1" r="2.4" fill="#fff"/><circle cx="-19.6" cy="-1.2" r="1.3" fill="#1a1009"/>
-    <ellipse cx="-21" cy="5" rx="2" ry="1.2" fill="#ff9aa8" opacity=".7"/>
-    <path d="M-18 -7 Q-22 -16 -27 -17 M-14 -8 Q-15 -17 -19 -20" stroke="#2e1d12" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <circle cx="-27" cy="-17" r="1.6" fill="#2e1d12"/><circle cx="-19" cy="-20" r="1.6" fill="#2e1d12"/>
-    <g class="bee-wing bee-wing-front"><path d="M3 -7 C0 -28 22 -30 20 -15 C19 -6 9 -4 3 -6Z" fill="url(#bw${id})" stroke="#9cc7ea" stroke-width=".7"/><path d="M4 -8 Q10 -18 18 -20" stroke="#9cc7ea" stroke-width=".5" fill="none"/></g>
-  </svg>`;
+// 일러스트 꿀벌: 뒷날개 · 몸통 · 앞날개 세 장을 겹쳐서 날개만 붕붕 떨게 함
+function beeSVG() {
+  const A = 'assets/bee-';
+  return `<div class="bee-art" aria-hidden="true">
+    <img class="bee-wing bee-wing-back" src="${A}wingBack.webp" alt="" draggable="false">
+    <img class="bee-body" src="${A}body.webp" alt="" draggable="false">
+    <img class="bee-wing bee-wing-front" src="${A}wingFront.webp" alt="" draggable="false">
+  </div>`;
 }
 
 export class Bees {
@@ -61,7 +46,7 @@ export class Bees {
     const id = Math.random().toString(36).slice(2, 7);
     const el = document.createElement('div');
     el.className = 'bee';
-    el.innerHTML = beeSVG(id);
+    el.innerHTML = beeSVG();
     this.layer.appendChild(el);
     const p = at ? { x: at.x, y: at.y - 100 } : this.randomPoint();
     const b = { el, x: p.x, y: p.y, vx: 0, vy: 0, target: this.randomPoint(), rest: 0, phase: Math.random() * 10, face: -1 };

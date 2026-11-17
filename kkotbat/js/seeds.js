@@ -29,7 +29,7 @@ export class SeedField {
   desiredCount() {
     const b = this.getBounds();
     const area = (b.right - b.left) * (b.bottom - b.top);
-    return Math.max(5, Math.min(8, Math.round(area / 220000) + 2));
+    return Math.max(3, Math.min(6, Math.round(area / 220000)));
   }
 
   baseSize() {

@@ -480,14 +480,17 @@ img { -webkit-user-drag: none; user-select: none; }
 .pf-label {
   position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translate(-50%, 4px);
   padding: 7px 14px; border-radius: 999px; white-space: nowrap;
-  background: #fff; color: var(--ink); font-size: 13.5px; font-weight: 600;
-  box-shadow: 0 6px 16px rgba(16, 60, 110, 0.18);
+  background: linear-gradient(135deg, rgba(255,255,255,.62), rgba(255,255,255,.34));
+  backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,.75);
+  color: var(--ink); font-size: 13.5px; font-weight: 600;
+  box-shadow: 0 8px 22px rgba(16, 60, 30, 0.16), inset 0 1px 0 rgba(255,255,255,.8);
   opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none;
   scale: var(--lk, 1); transform-origin: 50% 100%;
 }
 .pf-new {
   display: none; margin-right: 6px; padding: 2px 8px; border-radius: 999px;
-  background: #e3f6d2; color: var(--leaf-deep); font-size: 12px; font-weight: 700;
+  background: rgba(227,246,210,.75); color: var(--leaf-deep); font-size: 12px; font-weight: 700;
 }
 .plot-flower:hover .pf-label, .plot-flower:focus-visible .pf-label,
 .plot-flower.is-labeled .pf-label, .plot-flower.is-latest .pf-label { opacity: 1; transform: translate(-50%, 0); }
@@ -641,10 +644,12 @@ body.is-planting .zoom-ctl, body.is-growing .zoom-ctl, body.is-blooming .zoom-ct
 .world::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 3px rgba(255,255,255,.35), inset 0 0 140px 30px rgba(18,70,8,.35); }
 
 /* 꿀벌 */
-.bee { position: absolute; left: -29px; top: -24px; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 5px rgba(30, 60, 20, 0.22)); }
-.bee svg { display: block; scale: var(--zk, 1); }
-.bee .bee-wing { transform-box: fill-box; transform-origin: 50% 100%; animation: buzz .07s linear infinite alternate; }
-.bee .bee-wing-back { animation-delay: .035s; opacity: .85; }
-@keyframes buzz { from { transform: scaleY(1); } to { transform: scaleY(.35); } }
+.bee { position: absolute; left: -32px; top: -26px; pointer-events: none; will-change: transform; filter: drop-shadow(0 7px 5px rgba(30, 60, 20, 0.22)); }
+.bee .bee-art { position: relative; width: 64px; height: 52px; scale: var(--zk, 1); }
+.bee .bee-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bee .bee-wing { animation: buzz .06s linear infinite alternate; }
+.bee .bee-wing-back { transform-origin: 36% 50%; animation-delay: .03s; }
+.bee .bee-wing-front { transform-origin: 38% 51%; }
+@keyframes buzz { from { transform: scaleY(1) rotate(0deg); } to { transform: scaleY(.45) rotate(-6deg); } }
 .butterfly .bf { scale: var(--zk, 1); }
 @media (prefers-reduced-motion: reduce) { .bee .bee-wing { animation: none; } }
