@@ -497,10 +497,14 @@ img { -webkit-user-drag: none; user-select: none; }
 @keyframes found { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
 
 /* ───────── 나비 ───────── */
-.butterfly { position: absolute; left: -37px; top: -30px; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 6px rgba(30, 60, 20, 0.2)); }
-.butterfly .wing { transform-box: view-box; transform-origin: 0 0; animation: flap var(--flap, .2s) ease-in-out infinite alternate; }
+.butterfly { position: absolute; left: -40px; top: -35px; pointer-events: none; will-change: transform; filter: drop-shadow(0 8px 6px rgba(30, 60, 20, 0.22)); }
+.butterfly .bf { position: relative; width: 80px; height: 69px; }
+.butterfly .wing { position: absolute; top: 0; width: 50%; height: 100%; animation: flap var(--flap, .2s) ease-in-out infinite alternate; }
+.butterfly .wing-l { left: 0; transform-origin: 100% 50%; }
+.butterfly .wing-r { left: 50%; transform-origin: 0 50%; animation-delay: 0s; }
+.butterfly .bf-body { position: absolute; top: 0; left: 50%; width: 10.7px; height: 100%; transform: translateX(-50%); }
 .butterfly.is-resting .wing { animation-duration: .9s; }
-@keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(0.22); } }
+@keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(0.28); } }
 @media (prefers-reduced-motion: reduce) { .butterfly .wing { animation: none; } }
 
 /* ───────── 07 방명록 ───────── */

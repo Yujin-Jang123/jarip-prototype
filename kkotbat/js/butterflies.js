@@ -3,48 +3,15 @@
 
 const PER_FLOWERS = 4;
 const MAX = 12;
-// [테두리, 날개색, 안쪽 크림색]
-const COLORS = [
-  ['#4f4677', '#8fbaf5', '#fff6ea'], // 하늘
-  ['#7a4560', '#f6a9c9', '#fff4f2'], // 분홍
-  ['#57468a', '#b8a2f3', '#fbf6ff'], // 라일락
-  ['#7c4f3d', '#ffbd92', '#fff8ee'], // 살구
-  ['#3b6460', '#8fdac9', '#f3fff9'], // 민트
-  ['#7a5f30', '#ffd677', '#fffaf0'], // 버터
-];
-
-// 왼쪽 날개 한 짝 (오른쪽은 좌우 반전)
-function wing(id) {
-  const fore = 'M-2 -3 C-10 -20 -26 -33 -40 -32 C-48 -31 -50 -22 -46 -12 C-42 -3 -30 1 -3 1 Z';
-  const hind = 'M-2 1 C-14 0 -30 4 -34 12 C-37 18 -33 22 -31 25 C-29 30 -23 33 -19 31 C-15 34 -9 30 -7 25 C-4 19 -2 10 -2 1 Z';
-  const veins = [[-4,-2,-38,-28],[-4,-2,-44,-18],[-4,-1,-42,-8],[-4,-2,-26,-29],[-3,3,-31,14],[-3,4,-26,27],[-3,4,-14,30]]
-    .map(([x1,y1,x2,y2]) => `<path d="M${x1} ${y1} Q${(x1+x2)/2} ${(y1+y2)/2-3} ${x2} ${y2}"/>`).join('');
-  const dots = [[-40,-27,2.2],[-44,-21,1.9],[-46,-15,1.6],[-45,-9,1.3],[-34,-31,1.5]]
-    .map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*0.8}" fill="#fff" opacity=".9"/>`).join('');
-  const spots = [[-31,18,1.6],[-28,25,1.5],[-22,29,1.3]].map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#bk${id})"/>`).join('');
-  return `<path d="${hind}" fill="url(#bh${id})" stroke="url(#be${id})" stroke-width="1.4"/>${spots}
-    <path d="${fore}" fill="url(#bf${id})" stroke="url(#be${id})" stroke-width="1.4"/>
-    <g stroke="#fff" stroke-opacity=".38" stroke-width=".55" fill="none">${veins}</g>${dots}`;
-}
-
-function butterflySVG([edge, mid, inner], id) {
-  return `<svg viewBox="-50 -40 100 80" width="74" height="60" aria-hidden="true">
-    <defs>
-      <radialGradient id="bf${id}" gradientUnits="userSpaceOnUse" cx="-2" cy="-2" r="48"><stop offset="0" stop-color="${inner}"/><stop offset=".38" stop-color="${inner}"/><stop offset=".6" stop-color="${mid}"/><stop offset=".84" stop-color="${mid}"/><stop offset=".95" stop-color="${edge}"/><stop offset="1" stop-color="${edge}"/></radialGradient>
-      <radialGradient id="bh${id}" gradientUnits="userSpaceOnUse" cx="-2" cy="0" r="40"><stop offset="0" stop-color="${inner}"/><stop offset=".35" stop-color="${inner}"/><stop offset=".62" stop-color="${mid}"/><stop offset=".84" stop-color="${mid}"/><stop offset=".97" stop-color="${edge}"/></radialGradient>
-      <linearGradient id="be${id}" x1="0" x2="1"><stop offset="0" stop-color="${edge}"/><stop offset="1" stop-color="${edge}" stop-opacity=".6"/></linearGradient>
-      <radialGradient id="bk${id}"><stop offset="0" stop-color="${edge}"/><stop offset="1" stop-color="${edge}" stop-opacity=".5"/></radialGradient>
-      <linearGradient id="bb${id}" x1="0" x2="1"><stop offset="0" stop-color="#8a5a3c"/><stop offset=".5" stop-color="#b98560"/><stop offset="1" stop-color="#6e4329"/></linearGradient>
-    </defs>
-    <g class="wing wing-l">${wing(id)}</g>
-    <g class="wing wing-r"><g transform="scale(-1 1)">${wing(id)}</g></g>
-    <path d="M-1 -11 Q-6 -24 -11 -29 M1 -11 Q6 -24 11 -29" stroke="#6e4329" stroke-width="1" fill="none" stroke-linecap="round"/>
-    <ellipse cx="-11.5" cy="-29.5" rx="1.9" ry="1.4" fill="#7a4a2e"/><ellipse cx="11.5" cy="-29.5" rx="1.9" ry="1.4" fill="#7a4a2e"/>
-    <circle cx="0" cy="-10" r="2.6" fill="url(#bb${id})"/>
-    <ellipse cx="0" cy="-3" rx="2.8" ry="5" fill="url(#bb${id})"/>
-    <ellipse cx="0" cy="9" rx="2.1" ry="8" fill="url(#bb${id})"/>
-    <path d="M-1.6 5 H1.6 M-1.8 8.5 H1.8 M-1.6 12 H1.6" stroke="#5b371f" stroke-opacity=".45" stroke-width=".5"/>
-  </svg>`;
+// 나비 그림(이미지)을 왼쪽 날개 · 오른쪽 날개 · 몸통으로 나눠 날갯짓시킴
+const COLORS = ['blue', 'pink', 'lilac', 'mint', 'peach', 'butter'];
+function butterflySVG(color) {
+  const A = 'assets/';
+  return `<div class="bf" aria-hidden="true">
+    <img class="wing wing-l" src="${A}bf-${color}-l.webp" alt="" draggable="false">
+    <img class="wing wing-r" src="${A}bf-${color}-r.webp" alt="" draggable="false">
+    <img class="bf-body" src="${A}butterfly-body.webp" alt="" draggable="false">
+  </div>`;
 }
 
 export class Butterflies {
@@ -70,7 +37,7 @@ export class Butterflies {
     const id = Math.random().toString(36).slice(2, 7);
     const el = document.createElement('div');
     el.className = 'butterfly';
-    el.innerHTML = butterflySVG(COLORS[this.list.length % COLORS.length], id);
+    el.innerHTML = butterflySVG(COLORS[this.list.length % COLORS.length]);
     el.style.setProperty('--flap', `${(0.16 + Math.random() * 0.08).toFixed(2)}s`);
     this.layer.appendChild(el);
     const b = { el, x: from.x, y: from.y - 120, vx: 0, vy: 0, target: null, rest: 0, phase: Math.random() * 10 };
