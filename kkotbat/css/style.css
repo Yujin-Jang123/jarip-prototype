@@ -491,8 +491,11 @@ img { -webkit-user-drag: none; user-select: none; }
 }
 .pf-new {
   display: none; margin-right: 6px; padding: 2px 8px; border-radius: 999px;
-  background: linear-gradient(180deg, #ff9f2e, #ff7a1a); border: 0; color: #fff; font-size: 12px; font-weight: 800;
-  box-shadow: 0 2px 6px rgba(255, 110, 20, .35);
+  background: linear-gradient(160deg, rgba(255, 168, 70, .78) 0%, rgba(255, 112, 20, .62) 100%);
+  backdrop-filter: blur(10px) saturate(1.3); -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  border: 1px solid rgba(255, 236, 210, .9); color: #fff; font-size: 12px; font-weight: 800;
+  text-shadow: 0 1px 2px rgba(170, 60, 0, .45);
+  box-shadow: 0 3px 10px rgba(255, 110, 20, .3), inset 0 1px 1px rgba(255, 255, 255, .75), inset 0 -2px 4px rgba(200, 70, 0, .25);
 }
 .plot-flower:hover .pf-label, .plot-flower:focus-visible .pf-label,
 .plot-flower.is-labeled .pf-label, .plot-flower.is-latest .pf-label { opacity: 1; transform: translate(-50%, 0); }
@@ -646,12 +649,12 @@ body.is-planting .zoom-ctl, body.is-growing .zoom-ctl, body.is-blooming .zoom-ct
 .world::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 3px rgba(255,255,255,.35), inset 0 0 140px 30px rgba(18,70,8,.35); }
 
 /* 꿀벌 */
-.bee { position: absolute; left: -30px; top: -27px; pointer-events: none; will-change: transform; filter: drop-shadow(0 7px 5px rgba(30, 60, 20, 0.22)); }
-.bee .bee-art { position: relative; width: 60px; height: 54px; scale: var(--zk, 1); }
+.bee { position: absolute; left: -32px; top: -26px; pointer-events: none; will-change: transform; filter: drop-shadow(0 7px 5px rgba(30, 60, 20, 0.22)); }
+.bee .bee-art { position: relative; width: 64px; height: 52px; scale: var(--zk, 1); }
 .bee .bee-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .bee .bee-wing { animation: buzz .06s linear infinite alternate; }
-.bee .bee-wing-back { transform-origin: 45% 49%; animation-delay: .03s; }
-.bee .bee-wing-front { transform-origin: 45% 50%; }
+.bee .bee-wing-back { transform-origin: 36% 50%; animation-delay: .03s; }
+.bee .bee-wing-front { transform-origin: 38% 51%; }
 @keyframes buzz { from { transform: scaleY(1) rotate(0deg); } to { transform: scaleY(.45) rotate(-6deg); } }
 .butterfly .bf { scale: var(--zk, 1); }
 @media (prefers-reduced-motion: reduce) { .bee .bee-wing { animation: none; } }
@@ -690,4 +693,4 @@ body.is-planting .zoom-ctl, body.is-growing .zoom-ctl, body.is-blooming .zoom-ct
 
 /* ───────── 무당벌레 ───────── */
 .ladybug { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; will-change: transform; }
-.ladybug img { position: absolute; width: 24px; height: auto; left: -12px; top: -13px; filter: drop-shadow(0 3px 2px rgba(30, 60, 20, .35)); }
+.ladybug img { position: absolute; width: 28px; height: auto; left: -14px; top: -15px; filter: drop-shadow(0 3px 2px rgba(30, 60, 20, .35)); }

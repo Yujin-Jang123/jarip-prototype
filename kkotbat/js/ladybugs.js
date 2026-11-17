@@ -77,7 +77,7 @@ export class Ladybugs {
   }
 
   render(b, wobble) {
-    b.el.style.transform = `translate(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px) scale(var(--zk, 1)) scaleY(.62) rotate(${(b.heading + wobble).toFixed(1)}deg)`;
+    b.el.style.transform = `translate(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px) scale(var(--zk, 1)) rotate(${(b.heading + wobble).toFixed(1)}deg)`;
     b.el.style.zIndex = String(Math.round(b.y + 380));
   }
 }
