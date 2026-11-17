@@ -1,14 +1,14 @@
-import { paintMeadow } from './meadow.js?v=1117g';
-import { SeedField } from './seeds.js?v=1117g';
-import { store } from './store.js?v=1117g';
-import { PlantScene } from './plant.js?v=1117g';
-import { GrowScene } from './grow.js?v=1117g';
-import { BloomScene } from './bloom.js?v=1117g';
-import { FlowerField } from './field.js?v=1117g';
-import { GuestbookPanel } from './guestbook.js?v=1117g';
-import { Butterflies } from './butterflies.js?v=1117g';
-import { Bees } from './bees.js?v=1117g';
-import { Ladybugs } from './ladybugs.js?v=1117g';
+import { paintMeadow } from './meadow.js?v=1117h';
+import { SeedField } from './seeds.js?v=1117h';
+import { store } from './store.js?v=1117h';
+import { PlantScene } from './plant.js?v=1117h';
+import { GrowScene } from './grow.js?v=1117h';
+import { BloomScene } from './bloom.js?v=1117h';
+import { FlowerField } from './field.js?v=1117h';
+import { GuestbookPanel } from './guestbook.js?v=1117h';
+import { Butterflies } from './butterflies.js?v=1117h';
+import { Bees } from './bees.js?v=1117h';
+import { Ladybugs } from './ladybugs.js?v=1117h';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };
@@ -229,19 +229,18 @@ const bees = new Bees({
   getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
   getArea: () => ({ x0: 300, x1: WORLD.width - 300, y0: WORLD.horizon + 120, y1: WORLD.height - 260 }),
 });
-bees.update(0);
 const ladybugs = new Ladybugs({
   layer: $('plots'), reducedMotion,
   getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
   getArea: () => ({ x0: 300, x1: WORLD.width - 300, y0: WORLD.horizon + 200, y1: WORLD.height - 200 }),
 });
-ladybugs.update(0);
 
 /* ───────── 07 방명록 ───────── */
 const guest = new GuestbookPanel({ store, reducedMotion, toast, onClose: () => field.select(null) });
 
 async function plantFlower(flower) {
-  const spot = field.findSpot(cam, viewport.clientWidth / view.s, viewport.clientHeight / view.s, WORLD.horizon, WORLD.width, WORLD.height);
+  // 새싹을 심을 때 사용자가 누른 자리에 그대로 꽃을 피움 (자리 정보가 없을 때만 빈자리 찾기)
+  const spot = Number.isFinite(flower.x) && Number.isFinite(flower.y) ? { x: flower.x, y: flower.y } : field.findSpot(cam, viewport.clientWidth / view.s, viewport.clientHeight / view.s, WORLD.horizon, WORLD.width, WORLD.height);
   const saved = await store.addFlower({
     name: flower.name, image: flower.image, recipe: flower.recipe, missions: flower.missions, x: spot.x, y: spot.y,
   });
@@ -252,7 +251,7 @@ async function plantFlower(flower) {
   field.sparkle(saved.id);
   butterflies.update(field.flowers.size, { x: saved.x, y: saved.y });
   bees.update(field.flowers.size, { x: saved.x, y: saved.y });
-  ladybugs.update(field.flowers.size);
+  ladybugs.update(field.flowers.size, { x: saved.x, y: saved.y });
   await refresh(true);
   toast(`${saved.name}의 꽃이 꽃밭에 심겼어요. 다른 꽃들도 구경해보세요`, 4200);
   window.dispatchEvent(new CustomEvent('kkotbat:planted', { detail: saved }));

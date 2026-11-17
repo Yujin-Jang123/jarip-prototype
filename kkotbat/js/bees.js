@@ -1,7 +1,6 @@
-// 꽃밭의 호박벌 — 처음 1마리, 꽃 8송이마다 1마리씩 늘어남 (최대 3마리)
+// 꽃밭의 꿀벌 — 처음엔 없고, 첫 꽃이 피면 1마리. 이후 꽃 8송이마다 1마리씩 (최대 3마리)
 // 날개를 빠르게 붕붕 떨며 꽃(없으면 풀밭 여기저기)을 옮겨 다니고, 꽃 위에서 잠깐 맴돎.
 
-const BASE = 1;
 const PER_FLOWERS = 8;
 const MAX = 3;
 
@@ -9,9 +8,9 @@ const MAX = 3;
 function beeSVG() {
   const A = 'assets/bee-';
   return `<div class="bee-art" aria-hidden="true">
-    <img class="bee-wing bee-wing-back" src="${A}wingBack.webp?v=1117g" alt="" draggable="false">
-    <img class="bee-body" src="${A}body.webp?v=1117g" alt="" draggable="false">
-    <img class="bee-wing bee-wing-front" src="${A}wingFront.webp?v=1117g" alt="" draggable="false">
+    <img class="bee-wing bee-wing-back" src="${A}wingBack.webp?v=1117h" alt="" draggable="false">
+    <img class="bee-body" src="${A}body.webp?v=1117h" alt="" draggable="false">
+    <img class="bee-wing bee-wing-front" src="${A}wingFront.webp?v=1117h" alt="" draggable="false">
   </div>`;
 }
 
@@ -28,7 +27,7 @@ export class Bees {
   }
 
   update(count, at) {
-    const want = Math.min(MAX, BASE + Math.floor(count / PER_FLOWERS));
+    const want = Math.min(MAX, Math.ceil(count / PER_FLOWERS));
     while (this.list.length < want) this.spawn(at);
   }
 

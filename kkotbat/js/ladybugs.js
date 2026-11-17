@@ -1,7 +1,6 @@
-// 꽃밭의 무당벌레 — 처음 1마리, 꽃 12송이마다 1마리 (최대 2마리)
+// 꽃밭의 무당벌레 — 처음엔 없고, 첫 꽃이 피면 1마리. 이후 꽃 12송이마다 1마리 (최대 2마리)
 // 풀밭을 천천히 기어다니다가 꽃 밑동에서 잠깐 쉬었다가 다시 움직임.
 
-const BASE = 1;
 const PER_FLOWERS = 12;
 const MAX = 2;
 
@@ -17,9 +16,9 @@ export class Ladybugs {
     requestAnimationFrame(this.frame);
   }
 
-  update(count) {
-    const want = Math.min(MAX, BASE + Math.floor(count / PER_FLOWERS));
-    while (this.list.length < want) this.spawn();
+  update(count, at) {
+    const want = Math.min(MAX, Math.ceil(count / PER_FLOWERS));
+    while (this.list.length < want) this.spawn(at);
   }
 
   randomPoint(from) {
@@ -37,12 +36,12 @@ export class Ladybugs {
     };
   }
 
-  spawn() {
+  spawn(at) {
     const el = document.createElement('div');
     el.className = 'ladybug';
     el.innerHTML = '<img src="assets/ladybug.webp" alt="" draggable="false">';
     this.layer.appendChild(el);
-    const p = this.randomPoint();
+    const p = at ? { x: at.x + (Math.random() < 0.5 ? -1 : 1) * (30 + Math.random() * 30), y: at.y + 10 } : this.randomPoint();
     const b = { el, x: p.x, y: p.y, heading: Math.random() * 360, target: this.randomPoint(p), rest: 1 + Math.random() * 2, phase: Math.random() * 10 };
     this.list.push(b);
     this.render(b, 0);

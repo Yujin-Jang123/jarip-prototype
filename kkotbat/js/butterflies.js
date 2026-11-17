@@ -1,4 +1,4 @@
-// 꽃밭의 나비 — 꽃이 많아질수록 나비가 늘어남 (꽃 5송이마다 1마리, 최대 4마리)
+// 꽃밭의 나비 — 꽃이 많아질수록 나비가 늘어남 (첫 꽃이 피면 1마리, 이후 꽃 5송이마다 1마리, 최대 4마리)
 // 나비는 꽃에서 꽃으로 팔랑팔랑 날아다니고, 꽃 위에서 잠깐 머물렀다가 다음 꽃으로 감.
 
 const PER_FLOWERS = 5;
@@ -27,7 +27,7 @@ export class Butterflies {
 
   /** 꽃 수에 맞게 나비 수를 맞춤. 새로 생긴 나비는 방금 심은 꽃(at)에서 날아오름 */
   update(count, at) {
-    const want = Math.min(MAX, Math.floor(count / PER_FLOWERS));
+    const want = Math.min(MAX, Math.ceil(count / PER_FLOWERS));
     while (this.list.length < want) this.spawn(at);
   }
 
