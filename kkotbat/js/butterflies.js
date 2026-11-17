@@ -1,8 +1,8 @@
-// 꽃밭의 나비 — 꽃이 많아질수록 나비가 늘어남 (꽃 4송이마다 1마리, 최대 12마리)
+// 꽃밭의 나비 — 꽃이 많아질수록 나비가 늘어남 (꽃 5송이마다 1마리, 최대 4마리)
 // 나비는 꽃에서 꽃으로 팔랑팔랑 날아다니고, 꽃 위에서 잠깐 머물렀다가 다음 꽃으로 감.
 
-const PER_FLOWERS = 4;
-const MAX = 12;
+const PER_FLOWERS = 5;
+const MAX = 4;
 // 나비 그림(이미지)을 왼쪽 날개 · 오른쪽 날개 · 몸통으로 나눠 날갯짓시킴
 const COLORS = ['blue', 'pink', 'lilac', 'mint', 'peach', 'butter'];
 function butterflySVG(color) {

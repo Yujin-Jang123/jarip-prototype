@@ -8,6 +8,7 @@ import { FlowerField } from './field.js';
 import { GuestbookPanel } from './guestbook.js';
 import { Butterflies } from './butterflies.js';
 import { Bees } from './bees.js';
+import { Ladybugs } from './ladybugs.js';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };
@@ -218,7 +219,7 @@ const field = new FlowerField({
   },
 });
 
-/* ───────── 나비: 꽃 4송이마다 1마리 ───────── */
+/* ───────── 나비(꽃 5송이마다, 최대 4) · 호박벌(최대 3) · 무당벌레(최대 2) ───────── */
 const butterflies = new Butterflies({
   layer: $('plots'), reducedMotion,
   getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
@@ -229,6 +230,12 @@ const bees = new Bees({
   getArea: () => ({ x0: 300, x1: WORLD.width - 300, y0: WORLD.horizon + 120, y1: WORLD.height - 260 }),
 });
 bees.update(0);
+const ladybugs = new Ladybugs({
+  layer: $('plots'), reducedMotion,
+  getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
+  getArea: () => ({ x0: 300, x1: WORLD.width - 300, y0: WORLD.horizon + 200, y1: WORLD.height - 200 }),
+});
+ladybugs.update(0);
 
 /* ───────── 07 방명록 ───────── */
 const guest = new GuestbookPanel({ store, reducedMotion, toast, onClose: () => field.select(null) });
@@ -245,6 +252,7 @@ async function plantFlower(flower) {
   field.sparkle(saved.id);
   butterflies.update(field.flowers.size, { x: saved.x, y: saved.y });
   bees.update(field.flowers.size, { x: saved.x, y: saved.y });
+  ladybugs.update(field.flowers.size);
   await refresh(true);
   toast(`${saved.name}의 꽃이 꽃밭에 심겼어요. 다른 꽃들도 구경해보세요`, 4200);
   window.dispatchEvent(new CustomEvent('kkotbat:planted', { detail: saved }));
@@ -297,7 +305,7 @@ $('findMine').addEventListener('click', async () => {
 /* ───────── 시작 ───────── */
 centerCam();
 seeds.start();
-store.getFlowers().then((list) => { field.renderAll(list); butterflies.update(list.length); bees.update(list.length); });
+store.getFlowers().then((list) => { field.renderAll(list); butterflies.update(list.length); bees.update(list.length); ladybugs.update(list.length); });
 refresh();
 
 let resizeTimer;

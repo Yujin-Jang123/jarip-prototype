@@ -69,17 +69,16 @@ const BLOOM = [
 // 꽃 색: 산뜻하고 따뜻한 6색 [r, g, b]
 // 꽃 색: 꽃 가운데(inner) → 꽃잎 끝(outer)으로 번지는 그라디언트 6가지
 export const PALETTE = [
-  { name: '선셋',      inner: [255, 224, 150], outer: [255, 96, 120] },
-  { name: '피치',      inner: [255, 238, 200], outer: [255, 132, 72] },
-  { name: '레몬',      inner: [255, 252, 200], outer: [255, 196, 20] },
-  { name: '체리블라썸', inner: [255, 232, 244], outer: [255, 92, 168] },
-  { name: '오션',      inner: [212, 240, 255], outer: [52, 132, 255] },
-  { name: '미드나잇',   inner: [120, 116, 140], outer: [18, 16, 26], dark: true },
-  { name: '스카이',     inner: [236, 250, 255], outer: [96, 200, 255] },
-  { name: '루비',      inner: [255, 190, 170], outer: [214, 18, 46] },
-  { name: '선플라워',   inner: [255, 244, 170], outer: [255, 150, 0] },
-  { name: '네이비',     inner: [170, 196, 255], outer: [28, 48, 150], dark: true },
-  { name: '코랄화이트', inner: [255, 255, 255], outer: [255, 170, 150] },
+  { name: '레드', inner: [255,160,140], outer: [205,8,28] },
+  { name: '스카이', inner: [236,250,255], outer: [80,190,255] },
+  { name: '옐로', inner: [255,252,205], outer: [255,192,10] },
+  { name: '퍼플', inner: [240,220,255], outer: [138,52,230] },
+  { name: '오렌지', inner: [255,236,200], outer: [255,112,16] },
+  { name: '블루', inner: [210,232,255], outer: [40,110,250] },
+  { name: '핑크', inner: [255,234,246], outer: [255,90,170] },
+  { name: '라벤더', inner: [250,244,255], outer: [176,140,250] },
+  { name: '네이비', inner: [170,196,255], outer: [30,50,160], dark: true },
+  { name: '코랄', inner: [255,242,228], outer: [255,118,104] },
 ];
 
 const pick = (arr, missionIndex) => arr[missionIndex % arr.length];
@@ -156,7 +155,7 @@ export function tinted(key, colorIndex) {
         else sat = Math.min(1, Math.max(o[1], 0.82) * Math.min(1, S + 0.1));
         const w = pal.dark ? 0.72 : 0.22;
         let l = srcL * (1 - w) + tl * w + (pal.dark ? 0 : 0.05);
-        if (pal.dark) sat *= 0.55;
+        if (pal.dark) sat *= 0.85;
         l = Math.min(0.95, Math.max(0.05, l));
         out = fromHsl(H, sat, l);
       }
