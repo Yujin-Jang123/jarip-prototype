@@ -6,11 +6,11 @@
 //   note   = { id, author, text, at }  (꽃마다 방명록)
 
 // 꽃밭 초기화: 키 버전을 올리면 이전 꽃·인사는 모두 비워짐
-const V = 'kkotbat.v5';
+const V = 'kkotbat.v6';
 const FLOWERS_KEY = `${V}.flowers`;
 const MY_FLOWER_KEY = `${V}.myFlowerId`;
 const GUESTBOOK_KEY = `${V}.guestbook`;
-try { ['kkotbat.flowers', 'kkotbat.myFlowerId', 'kkotbat.guestbook', 'kkotbat.v2.flowers', 'kkotbat.v2.myFlowerId', 'kkotbat.v2.guestbook', 'kkotbat.v3.flowers', 'kkotbat.v3.myFlowerId', 'kkotbat.v3.guestbook', 'kkotbat.v4.flowers', 'kkotbat.v4.myFlowerId', 'kkotbat.v4.guestbook'].forEach((k) => localStorage.removeItem(k)); } catch { /* 무시 */ } // { [flowerId]: [{ id, author, text, at }] }
+try { ['kkotbat.flowers', 'kkotbat.myFlowerId', 'kkotbat.guestbook', 'kkotbat.v2.flowers', 'kkotbat.v2.myFlowerId', 'kkotbat.v2.guestbook', 'kkotbat.v3.flowers', 'kkotbat.v3.myFlowerId', 'kkotbat.v3.guestbook', 'kkotbat.v4.flowers', 'kkotbat.v4.myFlowerId', 'kkotbat.v4.guestbook', 'kkotbat.v5.flowers', 'kkotbat.v5.myFlowerId', 'kkotbat.v5.guestbook'].forEach((k) => localStorage.removeItem(k)); } catch { /* 무시 */ } // { [flowerId]: [{ id, author, text, at }] }
 
 function read(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }

@@ -8,9 +8,9 @@ const MAX = 3;
 function beeSVG() {
   const A = 'assets/bee-';
   return `<div class="bee-art" aria-hidden="true">
-    <img class="bee-wing bee-wing-back" src="${A}wingBack.webp?v=1117k" alt="" draggable="false">
-    <img class="bee-body" src="${A}body.webp?v=1117k" alt="" draggable="false">
-    <img class="bee-wing bee-wing-front" src="${A}wingFront.webp?v=1117k" alt="" draggable="false">
+    <img class="bee-wing bee-wing-back" src="${A}wingBack.webp?v=1117l" alt="" draggable="false">
+    <img class="bee-body" src="${A}body.webp?v=1117l" alt="" draggable="false">
+    <img class="bee-wing bee-wing-front" src="${A}wingFront.webp?v=1117l" alt="" draggable="false">
   </div>`;
 }
 

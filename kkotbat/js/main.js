@@ -1,14 +1,14 @@
-import { paintMeadow, grassTop } from './meadow.js?v=1117k';
-import { SeedField } from './seeds.js?v=1117k';
-import { store } from './store.js?v=1117k';
-import { PlantScene } from './plant.js?v=1117k';
-import { GrowScene } from './grow.js?v=1117k';
-import { BloomScene } from './bloom.js?v=1117k';
-import { FlowerField } from './field.js?v=1117k';
-import { GuestbookPanel } from './guestbook.js?v=1117k';
-import { Butterflies } from './butterflies.js?v=1117k';
-import { Bees } from './bees.js?v=1117k';
-import { Ladybugs } from './ladybugs.js?v=1117k';
+import { paintMeadow, grassTop } from './meadow.js?v=1117l';
+import { SeedField } from './seeds.js?v=1117l';
+import { store } from './store.js?v=1117l';
+import { PlantScene } from './plant.js?v=1117l';
+import { GrowScene } from './grow.js?v=1117l';
+import { BloomScene } from './bloom.js?v=1117l';
+import { FlowerField } from './field.js?v=1117l';
+import { GuestbookPanel } from './guestbook.js?v=1117l';
+import { Butterflies } from './butterflies.js?v=1117l';
+import { Bees } from './bees.js?v=1117l';
+import { Ladybugs } from './ladybugs.js?v=1117l';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };
