@@ -463,7 +463,7 @@ img { -webkit-user-drag: none; user-select: none; }
 @keyframes bump { 0% { scale: 1; } 40% { scale: 1.18; } 100% { scale: 1; } }
 .plot-flower {
   position: absolute; width: 96px; height: 170px; padding: 0; border: 0; background: none;
-  transform: translate(-50%, -100%); transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) scale(var(--zk, 1)); transform-origin: 50% 100%;
   cursor: pointer;
 }
 .plot-flower:focus-visible { outline: 3px solid #fff; outline-offset: 4px; border-radius: 20px; }
@@ -483,6 +483,7 @@ img { -webkit-user-drag: none; user-select: none; }
   background: #fff; color: var(--ink); font-size: 13.5px; font-weight: 600;
   box-shadow: 0 6px 16px rgba(16, 60, 110, 0.18);
   opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none;
+  scale: var(--lk, 1); transform-origin: 50% 100%;
 }
 .pf-new {
   display: none; margin-right: 6px; padding: 2px 8px; border-radius: 999px;
@@ -638,3 +639,12 @@ img { -webkit-user-drag: none; user-select: none; }
 body.is-planting .zoom-ctl, body.is-growing .zoom-ctl, body.is-blooming .zoom-ctl { opacity: 0; pointer-events: none; }
 /* 꽃밭 끝: 가장자리가 은은하게 어두워져 끝이 보임 */
 .world::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 3px rgba(255,255,255,.35), inset 0 0 140px 30px rgba(18,70,8,.35); }
+
+/* 꿀벌 */
+.bee { position: absolute; left: -29px; top: -24px; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 5px rgba(30, 60, 20, 0.22)); }
+.bee svg { display: block; scale: var(--zk, 1); }
+.bee .bee-wing { transform-box: fill-box; transform-origin: 50% 100%; animation: buzz .07s linear infinite alternate; }
+.bee .bee-wing-back { animation-delay: .035s; opacity: .85; }
+@keyframes buzz { from { transform: scaleY(1); } to { transform: scaleY(.35); } }
+.butterfly .bf { scale: var(--zk, 1); }
+@media (prefers-reduced-motion: reduce) { .bee .bee-wing { animation: none; } }

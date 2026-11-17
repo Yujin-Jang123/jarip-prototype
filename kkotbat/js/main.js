@@ -7,6 +7,7 @@ import { BloomScene } from './bloom.js';
 import { FlowerField } from './field.js';
 import { GuestbookPanel } from './guestbook.js';
 import { Butterflies } from './butterflies.js';
+import { Bees } from './bees.js';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };
@@ -53,6 +54,10 @@ function applyCam() {
   clampCam();
   world.style.transformOrigin = '0 0';
   world.style.transform = `translate3d(${-cam.x * view.s}px, ${-cam.y * view.s}px, 0) scale(${view.s})`;
+  // 축소할수록 꽃·나비는 덜 작아지게, 이름표는 화면에서 같은 크기로 보이게
+  const zk = view.s < 1 ? Math.pow(1 / view.s, 0.55) : 1;
+  world.style.setProperty('--zk', zk.toFixed(3));
+  world.style.setProperty('--lk', (view.s < 1 ? 1 / view.s / zk : 1).toFixed(3));
   updateZoomUi();
 }
 // 배율을 s로 바꾸되, 월드 점 (x, y)는 화면에서 제자리
@@ -207,6 +212,12 @@ const butterflies = new Butterflies({
   layer: $('plots'), reducedMotion,
   getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
 });
+const bees = new Bees({
+  layer: $('plots'), reducedMotion,
+  getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
+  getArea: () => ({ x0: 300, x1: WORLD.width - 300, y0: WORLD.horizon + 120, y1: WORLD.height - 260 }),
+});
+bees.update(0);
 
 /* ───────── 07 방명록 ───────── */
 const guest = new GuestbookPanel({ store, reducedMotion, toast, onClose: () => field.select(null) });
@@ -222,6 +233,7 @@ async function plantFlower(flower) {
   field.setLatest(saved.id); // 가장 최근 꽃만 강조 → 다음 꽃이 심어지면 넘어감
   field.sparkle(saved.id);
   butterflies.update(field.flowers.size, { x: saved.x, y: saved.y });
+  bees.update(field.flowers.size, { x: saved.x, y: saved.y });
   await refresh(true);
   toast(`${saved.name}의 꽃이 꽃밭에 심겼어요. 다른 꽃들도 구경해보세요`, 4200);
   window.dispatchEvent(new CustomEvent('kkotbat:planted', { detail: saved }));
@@ -274,7 +286,7 @@ $('findMine').addEventListener('click', async () => {
 /* ───────── 시작 ───────── */
 centerCam();
 seeds.start();
-store.getFlowers().then((list) => { field.renderAll(list); butterflies.update(list.length); });
+store.getFlowers().then((list) => { field.renderAll(list); butterflies.update(list.length); bees.update(list.length); });
 refresh();
 
 let resizeTimer;
