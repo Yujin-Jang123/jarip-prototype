@@ -49,7 +49,7 @@ export class PlantScene {
     const vw = this.viewport.clientWidth, vh = this.viewport.clientHeight;
     const land = { x: vw / 2 + (x - vw / 2) * 0.25, y: vh * 0.64 };
     const cam = this.getCam();
-    this.spot = { x: cam.x + land.x, y: cam.y + land.y };
+    this.spot = { x: cam.x + land.x / (cam.s || 1), y: cam.y + land.y / (cam.s || 1) };
 
     await this.fall({ x, y }, land, image, size * 0.64);
     this.plantInWorld();

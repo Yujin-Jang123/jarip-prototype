@@ -18,6 +18,11 @@
       <button type="button" class="btn-outline" id="findMine">내 꽃 찾기</button>
     </div>
   </header>
+  <div class="zoom-ctl" role="group" aria-label="꽃밭 확대·축소">
+    <button type="button" id="zoomOut" aria-label="축소">−</button>
+    <button type="button" id="zoomLevel" class="zoom-level" aria-label="꽃밭 전체 보기" title="꽃밭 전체 보기">100%</button>
+    <button type="button" id="zoomIn" aria-label="확대">+</button>
+  </div>
 
   <main class="viewport" id="viewport" tabindex="0" aria-label="꽃밭. 드래그하거나 방향키로 둘러볼 수 있어요">
     <div class="world" id="world">
@@ -36,7 +41,7 @@
       <p>떠다니는 씨앗을 눌러<br>이 풀밭의 첫 번째 꽃을 피워보세요</p>
     </section>
 
-    <p class="hint-pill">드래그해서 둘러보고, 떠다니는 씨앗을 눌러보세요</p>
+    <p class="hint-pill">드래그로 둘러보고 휠로 확대·축소, 떠다니는 씨앗을 눌러보세요</p>
 
     <!-- 03 씨앗 심기 · 이름 붙이기 -->
     <div class="plant-overlay" id="plantOverlay" hidden>

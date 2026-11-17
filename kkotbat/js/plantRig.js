@@ -67,12 +67,12 @@ const BLOOM = [
 // 꽃 색: 산뜻하고 따뜻한 6색 [r, g, b]
 // 꽃 색: 꽃 가운데(inner) → 꽃잎 끝(outer)으로 번지는 그라디언트 6가지
 export const PALETTE = [
-  { name: '선셋', inner: [255, 214, 120], outer: [255, 72, 112] },
-  { name: '피치', inner: [255, 240, 200], outer: [255, 120, 60] },
-  { name: '레몬', inner: [255, 252, 210], outer: [255, 176, 0] },
-  { name: '라벤더', inner: [255, 214, 240], outer: [128, 84, 255] },
-  { name: '체리블라썸', inner: [255, 240, 246], outer: [255, 40, 140] },
-  { name: '오션', inner: [190, 255, 240], outer: [40, 110, 255] },
+  { name: '선셋', inner: [255, 236, 200], outer: [255, 128, 150] },
+  { name: '피치', inner: [255, 246, 228], outer: [255, 160, 118] },
+  { name: '레몬', inner: [255, 253, 232], outer: [255, 206, 84] },
+  { name: '라벤더', inner: [246, 236, 255], outer: [160, 140, 250] },
+  { name: '체리블라썸', inner: [255, 246, 250], outer: [255, 132, 186] },
+  { name: '오션', inner: [226, 244, 255], outer: [96, 160, 245] },
 ];
 
 const pick = (arr, missionIndex) => arr[missionIndex % arr.length];
@@ -139,8 +139,8 @@ export function tinted(key, colorIndex) {
         const tb = (pal.inner[2] + (pal.outer[2] - pal.inner[2]) * e) / 255;
         const [H, S, tl] = hsl(tr, tg, tb);
         // 밝기는 원래 그림의 광택·그림자를 살리면서 목표 색의 밝기를 섞음
-        const l = Math.min(0.96, 0.12 + L * 0.5 + tl * 0.32);
-        out = fromHsl(H, Math.min(1, S * 1.05), l);
+        const l = Math.min(0.97, 0.18 + L * 0.47 + tl * 0.35);
+        out = fromHsl(H, Math.min(1, S * 0.98), l);
       }
       px[i] = out[0]; px[i + 1] = out[1]; px[i + 2] = out[2];
     }

@@ -497,7 +497,7 @@ img { -webkit-user-drag: none; user-select: none; }
 @keyframes found { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
 
 /* ───────── 나비 ───────── */
-.butterfly { position: absolute; left: -31px; top: -27px; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 6px rgba(30, 60, 20, 0.2)); }
+.butterfly { position: absolute; left: -37px; top: -30px; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 6px rgba(30, 60, 20, 0.2)); }
 .butterfly .wing { transform-box: view-box; transform-origin: 0 0; animation: flap var(--flap, .2s) ease-in-out infinite alternate; }
 .butterfly.is-resting .wing { animation-duration: .9s; }
 @keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(0.22); } }
@@ -617,3 +617,20 @@ img { -webkit-user-drag: none; user-select: none; }
   .petal-rain { display: none; }
   .plant-card, .plant-overlay { transition: none; }
 }
+
+/* 확대·축소 */
+.zoom-ctl {
+  position: fixed; right: 20px; bottom: 24px; z-index: 14; display: flex; align-items: center;
+  background: rgba(255,255,255,.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: 999px; padding: 4px; box-shadow: 0 6px 20px rgba(20,60,10,.18);
+}
+.zoom-ctl button {
+  border: 0; background: transparent; font: inherit; color: var(--ink); cursor: pointer;
+  height: 36px; min-width: 36px; border-radius: 999px; font-size: 20px; font-weight: 600;
+}
+.zoom-ctl .zoom-level { font-size: 13px; min-width: 56px; font-weight: 600; }
+.zoom-ctl button:hover:not(:disabled) { background: rgba(78,154,31,.12); }
+.zoom-ctl button:disabled { opacity: .3; cursor: default; }
+body.is-planting .zoom-ctl, body.is-growing .zoom-ctl, body.is-blooming .zoom-ctl { opacity: 0; pointer-events: none; }
+/* 꽃밭 끝: 가장자리가 은은하게 어두워져 끝이 보임 */
+.world::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 3px rgba(255,255,255,.35), inset 0 0 140px 30px rgba(18,70,8,.35); }

@@ -37,29 +37,55 @@ const cam = { x: 0, y: 0 };
 const vel = { x: 0, y: 0 };
 let inertiaId = 0;
 
-function clampCam() {
-  cam.x = Math.max(0, Math.min(cam.x, WORLD.width - viewport.clientWidth));
-  cam.y = Math.max(0, Math.min(cam.y, WORLD.height - viewport.clientHeight));
+/* 카메라: cam = 화면 왼쪽 위에 보이는 월드 좌표, view.s = 확대 배율
+   화면 좌표 = (월드 좌표 - cam) × s */
+const view = { s: 1, user: 1 };             // user = 사용자가 휠로 고른 배율 (심는 동안 잠깐 바뀌었다가 돌아옴)
+const ZOOM_MAX = 2;
+function zoomMin() {                          // 가장 작게: 꽃밭 전체 너비(또는 높이)가 화면에 딱 들어오는 배율
+  return Math.min(1, Math.max(viewport.clientWidth / WORLD.width, viewport.clientHeight / WORLD.height));
 }
-const zoom = { s: 1, x: 0, y: 0 };
+function clampCam() {
+  const vw = viewport.clientWidth / view.s, vh = viewport.clientHeight / view.s;
+  cam.x = vw >= WORLD.width ? (WORLD.width - vw) / 2 : Math.max(0, Math.min(cam.x, WORLD.width - vw));
+  cam.y = vh >= WORLD.height ? (WORLD.height - vh) / 2 : Math.max(0, Math.min(cam.y, WORLD.height - vh));
+}
 function applyCam() {
   clampCam();
-  world.style.transformOrigin = `${zoom.x}px ${zoom.y}px`;
-  world.style.transform = `translate3d(${-cam.x}px, ${-cam.y}px, 0)${zoom.s !== 1 ? ` scale(${zoom.s})` : ''}`;
+  world.style.transformOrigin = '0 0';
+  world.style.transform = `translate3d(${-cam.x * view.s}px, ${-cam.y * view.s}px, 0) scale(${view.s})`;
+  updateZoomUi();
 }
-// 월드 좌표 (x, y)를 중심으로 확대/축소 (그 점은 화면에서 제자리)
-function setZoom(s, x, y, ms) {
-  zoom.s = s; zoom.x = x; zoom.y = y;
+// 배율을 s로 바꾸되, 월드 점 (x, y)는 화면에서 제자리
+function zoomAt(s, x, y, ms) {
+  const sx = (x - cam.x) * view.s, sy = (y - cam.y) * view.s;
+  view.s = s;
+  cam.x = x - sx / s; cam.y = y - sy / s;
   world.style.transition = ms ? `transform ${ms}ms cubic-bezier(.22,.7,.2,1)` : 'none';
   applyCam();
   if (ms) setTimeout(() => { world.style.transition = 'none'; }, ms);
 }
+// 심기 연출용: 1이면 사용자가 보던 배율로 돌아감
+function setZoom(s, x, y, ms) {
+  zoomAt(s === 1 ? view.user : Math.max(s, view.user), x, y, ms);
+}
+function userZoom(s, sx, sy, ms) {             // sx, sy = 화면 좌표
+  s = Math.max(zoomMin(), Math.min(ZOOM_MAX, s));
+  view.user = s;
+  zoomAt(s, cam.x + sx / view.s, cam.y + sy / view.s, ms);
+}
+const zoomUi = document.getElementById('zoomLevel');
+function updateZoomUi() {
+  if (!zoomUi) return;
+  zoomUi.textContent = `${Math.round(view.s * 100)}%`;
+  document.getElementById('zoomOut').disabled = view.s <= zoomMin() + 0.001;
+  document.getElementById('zoomIn').disabled = view.s >= ZOOM_MAX - 0.001;
+}
 const isPlanting = () => ['is-planting', 'is-growing', 'is-blooming'].some((c) => document.body.classList.contains(c));
 function centerCam() {
-  cam.x = (WORLD.width - viewport.clientWidth) / 2;
+  cam.x = (WORLD.width - viewport.clientWidth / view.s) / 2;
   // 지평선 위치: 가로 화면은 화면 중간, 세로로 긴 모바일 화면은 조금 위로
   const portrait = viewport.clientHeight > viewport.clientWidth;
-  cam.y = WORLD.horizon - viewport.clientHeight * (portrait ? 0.34 : 0.5);
+  cam.y = WORLD.horizon - viewport.clientHeight / view.s * (portrait ? 0.34 : 0.5);
   applyCam();
 }
 
@@ -77,8 +103,8 @@ viewport.addEventListener('pointermove', (e) => {
   const now = performance.now();
   const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
   const dt = Math.max(1, now - drag.t);
-  cam.x -= dx; cam.y -= dy;
-  vel.x = (-dx / dt) * 16; vel.y = (-dy / dt) * 16; // px/프레임
+  cam.x -= dx / view.s; cam.y -= dy / view.s;
+  vel.x = (-dx / view.s / dt) * 16; vel.y = (-dy / view.s / dt) * 16; // 월드 px/프레임
   drag.x = e.clientX; drag.y = e.clientY; drag.t = now;
   applyCam();
 });
@@ -104,10 +130,16 @@ viewport.addEventListener('wheel', (e) => {
   e.preventDefault();
   if (isPlanting()) return;
   cancelAnimationFrame(inertiaId);
-  cam.x += e.shiftKey ? e.deltaY : e.deltaX;
-  cam.y += e.shiftKey ? 0 : e.deltaY;
-  applyCam();
+  const r = viewport.getBoundingClientRect();
+  // 휠(트랙패드 핀치 포함) = 마우스가 있는 곳을 중심으로 확대·축소 / Shift+휠 = 좌우 이동
+  if (e.shiftKey) { cam.x += (e.deltaY || e.deltaX) / view.s; applyCam(); return; }
+  const k = Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015));
+  userZoom(view.s * k, e.clientX - r.left, e.clientY - r.top, 0);
 }, { passive: false });
+const zoomBtn = (k) => userZoom(view.user * k, viewport.clientWidth / 2, viewport.clientHeight / 2, reducedMotion ? 0 : 260);
+document.getElementById('zoomIn')?.addEventListener('click', () => zoomBtn(1.35));
+document.getElementById('zoomOut')?.addEventListener('click', () => zoomBtn(1 / 1.35));
+document.getElementById('zoomLevel')?.addEventListener('click', () => userZoom(zoomMin(), viewport.clientWidth / 2, viewport.clientHeight / 2, reducedMotion ? 0 : 400));
 
 viewport.addEventListener('keydown', (e) => {
   const step = 90;
@@ -115,8 +147,13 @@ viewport.addEventListener('keydown', (e) => {
   const m = moves[e.key];
   if (!m || e.target !== viewport || isPlanting()) return;
   e.preventDefault();
-  cam.x += m[0]; cam.y += m[1];
+  cam.x += m[0] / view.s; cam.y += m[1] / view.s;
   applyCam();
+});
+viewport.addEventListener('keydown', (e) => {
+  if (e.target !== viewport || isPlanting()) return;
+  if (e.key === '+' || e.key === '=') zoomBtn(1.35);
+  else if (e.key === '-' || e.key === '_') zoomBtn(1 / 1.35);
 });
 
 /* ───────── 떠다니는 씨앗 ───────── */
@@ -138,7 +175,7 @@ const seeds = new SeedField($('seeds'), {
 /* ───────── 03 씨앗 심기 · 이름 붙이기 ───────── */
 const plant = new PlantScene({
   viewport, world, reducedMotion, setZoom,
-  getCam: () => ({ x: cam.x, y: cam.y }),
+  getCam: () => ({ x: cam.x, y: cam.y, s: view.s }),
   // 이름을 붙이면 04 성장 미션으로 (sprout = { name, image, x, y, plantedAt })
   onDone: (sprout) => grow.start(sprout),
 });
@@ -175,7 +212,7 @@ const butterflies = new Butterflies({
 const guest = new GuestbookPanel({ store, reducedMotion, toast, onClose: () => field.select(null) });
 
 async function plantFlower(flower) {
-  const spot = field.findSpot(cam, viewport.clientWidth, viewport.clientHeight, WORLD.horizon, WORLD.width, WORLD.height);
+  const spot = field.findSpot(cam, viewport.clientWidth / view.s, viewport.clientHeight / view.s, WORLD.horizon, WORLD.width, WORLD.height);
   const saved = await store.addFlower({
     name: flower.name, image: flower.image, recipe: flower.recipe, missions: flower.missions, x: spot.x, y: spot.y,
   });
@@ -196,7 +233,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 function panTo(x, y, ms = 900) {
   cancelAnimationFrame(inertiaId);
   const from = { x: cam.x, y: cam.y };
-  const to = { x: x - viewport.clientWidth / 2, y: y - viewport.clientHeight * 0.58 };
+  const to = { x: x - viewport.clientWidth / view.s / 2, y: y - viewport.clientHeight / view.s * 0.58 };
   if (reducedMotion) { cam.x = to.x; cam.y = to.y; applyCam(); return; }
   const start = performance.now();
   const step = (now) => {
@@ -242,6 +279,7 @@ refresh();
 
 let resizeTimer;
 window.addEventListener('resize', () => {
+  if (view.s < zoomMin()) { view.s = view.user = zoomMin(); }
   applyCam();
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => seeds.resize(), 200);
