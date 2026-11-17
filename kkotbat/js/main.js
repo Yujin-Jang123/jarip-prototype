@@ -1,14 +1,14 @@
-import { paintMeadow } from './meadow.js';
-import { SeedField } from './seeds.js';
-import { store } from './store.js';
-import { PlantScene } from './plant.js';
-import { GrowScene } from './grow.js';
-import { BloomScene } from './bloom.js';
-import { FlowerField } from './field.js';
-import { GuestbookPanel } from './guestbook.js';
-import { Butterflies } from './butterflies.js';
-import { Bees } from './bees.js';
-import { Ladybugs } from './ladybugs.js';
+import { paintMeadow } from './meadow.js?v=1117f';
+import { SeedField } from './seeds.js?v=1117f';
+import { store } from './store.js?v=1117f';
+import { PlantScene } from './plant.js?v=1117f';
+import { GrowScene } from './grow.js?v=1117f';
+import { BloomScene } from './bloom.js?v=1117f';
+import { FlowerField } from './field.js?v=1117f';
+import { GuestbookPanel } from './guestbook.js?v=1117f';
+import { Butterflies } from './butterflies.js?v=1117f';
+import { Bees } from './bees.js?v=1117f';
+import { Ladybugs } from './ladybugs.js?v=1117f';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };

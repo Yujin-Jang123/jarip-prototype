@@ -4,7 +4,7 @@
 // - 방명록 목록 (최신순)
 // - 간단한 한 줄 남기기 (최대 40자). 작성자 이름은 내 꽃이 있으면 그 이름, 없으면 직접 입력(선택)
 
-import { renderRig } from './plantRig.js';
+import { renderRig } from './plantRig.js?v=1117f';
 
 const $ = (id) => document.getElementById(id);
 const NOTE_MAX = 40;

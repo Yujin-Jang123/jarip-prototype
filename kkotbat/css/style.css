@@ -652,7 +652,7 @@ body.is-planting .zoom-ctl, body.is-growing .zoom-ctl, body.is-blooming .zoom-ct
 .bee { position: absolute; left: -32px; top: -26px; pointer-events: none; will-change: transform; filter: drop-shadow(0 7px 5px rgba(30, 60, 20, 0.22)); }
 .bee .bee-art { position: relative; width: 64px; height: 52px; scale: var(--zk, 1); }
 .bee .bee-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.bee .bee-wing { animation: buzz .06s linear infinite alternate; }
+.bee .bee-wing { opacity: .88; animation: buzz .06s linear infinite alternate; }
 .bee .bee-wing-back { transform-origin: 36% 50%; animation-delay: .03s; }
 .bee .bee-wing-front { transform-origin: 38% 51%; }
 @keyframes buzz { from { transform: scaleY(1) rotate(0deg); } to { transform: scaleY(.45) rotate(-6deg); } }
