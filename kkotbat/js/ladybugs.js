@@ -1,8 +1,8 @@
-// 꽃밭의 무당벌레 — 처음엔 없고, 첫 꽃이 피면 1마리. 이후 꽃 12송이마다 1마리 (최대 2마리)
+// 꽃밭의 무당벌레 — 꽃 5송이마다 1마리 (최대 3마리)
 // 풀밭을 천천히 기어다니다가 꽃 밑동에서 잠깐 쉬었다가 다시 움직임.
 
-const PER_FLOWERS = 12;
-const MAX = 2;
+const PER_FLOWERS = 5;
+const MAX = 3;
 
 export class Ladybugs {
   constructor({ layer, getFlowers, getArea, reducedMotion }) {
@@ -17,7 +17,7 @@ export class Ladybugs {
   }
 
   update(count, at) {
-    const want = Math.min(MAX, Math.ceil(count / PER_FLOWERS));
+    const want = Math.min(MAX, Math.floor(count / PER_FLOWERS));
     while (this.list.length < want) this.spawn(at);
   }
 

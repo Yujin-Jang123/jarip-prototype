@@ -4,7 +4,7 @@
 // - 가장 최근에 심어진 꽃 1송이만 은은하게 빛나고 '방금 핀 꽃' 이름표가 붙음.
 //   다음 꽃이 심어지면 강조가 그 꽃으로 넘어감 (여러 사람이 쓰는 꽃밭이라 '내 꽃'을 상시 강조하지 않음)
 
-import { renderRig } from './plantRig.js?v=1117i';
+import { renderRig } from './plantRig.js?v=1117j';
 
 const FLOWER_SIZE = 230; // 풀밭 꽃 크기 (원 안 식물을 이 크기로 축소)
 

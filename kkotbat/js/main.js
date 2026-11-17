@@ -1,14 +1,14 @@
-import { paintMeadow } from './meadow.js?v=1117i';
-import { SeedField } from './seeds.js?v=1117i';
-import { store } from './store.js?v=1117i';
-import { PlantScene } from './plant.js?v=1117i';
-import { GrowScene } from './grow.js?v=1117i';
-import { BloomScene } from './bloom.js?v=1117i';
-import { FlowerField } from './field.js?v=1117i';
-import { GuestbookPanel } from './guestbook.js?v=1117i';
-import { Butterflies } from './butterflies.js?v=1117i';
-import { Bees } from './bees.js?v=1117i';
-import { Ladybugs } from './ladybugs.js?v=1117i';
+import { paintMeadow } from './meadow.js?v=1117j';
+import { SeedField } from './seeds.js?v=1117j';
+import { store } from './store.js?v=1117j';
+import { PlantScene } from './plant.js?v=1117j';
+import { GrowScene } from './grow.js?v=1117j';
+import { BloomScene } from './bloom.js?v=1117j';
+import { FlowerField } from './field.js?v=1117j';
+import { GuestbookPanel } from './guestbook.js?v=1117j';
+import { Butterflies } from './butterflies.js?v=1117j';
+import { Bees } from './bees.js?v=1117j';
+import { Ladybugs } from './ladybugs.js?v=1117j';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };
@@ -219,7 +219,7 @@ const field = new FlowerField({
   },
 });
 
-/* ───────── 나비(꽃 5송이마다, 최대 4) · 호박벌(최대 3) · 무당벌레(최대 2) ───────── */
+/* ───────── 나비(꽃 3송이마다, 최대 4) · 꿀벌(7송이마다, 최대 3) · 무당벌레(5송이마다, 최대 3) ───────── */
 const butterflies = new Butterflies({
   layer: $('plots'), reducedMotion,
   getFlowers: () => [...field.flowers.values()].map((f) => ({ x: f.x, y: f.y })),
