@@ -127,7 +127,8 @@ export function tinted(key, colorIndex) {
     // 원래 아주 밝은 꽃(데이지 등)은 색이 묻어나도록 밝기를 조금 내림
     let sumL = 0, cnt = 0;
     for (let i = 0; i < px.length; i += 64) if (px[i + 3] > 128) { sumL += hsl(px[i] / 255, px[i + 1] / 255, px[i + 2] / 255)[2]; cnt++; }
-    const dim = cnt && sumL / cnt > 0.88 ? 0.84 : 1;
+    const pale = cnt && sumL / cnt > 0.82;
+    const dim = pale ? 0.8 : 1;
     for (let i = 0; i < px.length; i += 4) {
       if (px[i + 3] < 8) continue;
       const r = px[i] / 255, g = px[i + 1] / 255, b = px[i + 2] / 255;
@@ -146,7 +147,7 @@ export function tinted(key, colorIndex) {
         // 원래 그림(수국)의 밝기·채도를 그대로 살리고 색상만 바꿈 → 맑고 선명하게
         const o = hsl(r, g, b);
         const l = Math.min(0.95, (L * 0.8 + tl * 0.2 + 0.06) * dim);
-        out = fromHsl(H, Math.min(1, Math.max(o[1], 0.82) * Math.min(1, S + 0.1)), l);
+        out = fromHsl(H, pale ? 0.97 : Math.min(1, Math.max(o[1], 0.82) * Math.min(1, S + 0.1)), l);
       }
       px[i] = out[0]; px[i + 1] = out[1]; px[i + 2] = out[2];
     }
