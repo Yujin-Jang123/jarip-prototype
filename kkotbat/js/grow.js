@@ -105,31 +105,42 @@ export class GrowScene {
     probe.textContent = MISSIONS.reduce((a, b) => (b.length > a.length ? b : a));
     const cw = probe.offsetWidth, ch = probe.offsetHeight;
     probe.textContent = keep;
-    const m = 16, drift = 18;
-    const cands = [];
-    for (let y = m + drift; y + ch + drift + m <= vh; y += 14) {
-      for (let x = m + drift; x + cw + drift + m <= vw; x += 14) {
-        const r = { l: x - drift, t: y - drift, r: x + cw + drift, b: y + ch + drift };
-        if (!blocks.some((k) => r.l < k.r && r.r > k.l && r.t < k.b && r.b > k.t)) cands.push({ x, y });
-      }
-    }
-    const chosen = [];
+    const drift = 18;
     const stage = box($('growStageWrap'), 0);
     const sc = { x: (stage.l + stage.r) / 2, y: (stage.t + stage.b) / 2 };
-    for (let i = 0; i < chips.length; i++) {
-      let best = null, bestScore = -Infinity;
-      for (const c of cands) {
-        const cx = c.x + cw / 2, cy = c.y + ch / 2;
-        let d = chosen.length ? Infinity : 0;
-        for (const o of chosen) d = Math.min(d, Math.hypot(cx - o.x - cw / 2, (cy - o.y - ch / 2) * 1.6));
-        // 서로 멀리 + 원에서 너무 멀지 않게
-        const score = (chosen.length ? d : 1) - Math.hypot(cx - sc.x, cy - sc.y) * 0.22 + Math.random() * 4;
-        if (score > bestScore) { bestScore = score; best = c; }
+    const sr = (stage.r - stage.l) / 2;
+    // 미션은 화면 끝으로 가지 않게: 바깥 여백을 넉넉히 두고, 원 가까이에 모음
+    const layout = (strict) => {
+      const mx = strict ? Math.max(40, vw * 0.1) : 16, my = strict ? Math.max(30, vh * 0.07) : 16;
+      const reach = strict ? sr + 90 + cw : Infinity; // 원 중심에서 가로로 이 이상 벗어나지 않음
+      const cands = [];
+      for (let y = my + drift; y + ch + drift + my <= vh; y += 14) {
+        for (let x = mx + drift; x + cw + drift + mx <= vw; x += 14) {
+          const r = { l: x - drift, t: y - drift, r: x + cw + drift, b: y + ch + drift };
+          if (Math.abs(x + cw / 2 - sc.x) > reach) continue;
+          if (!blocks.some((k) => r.l < k.r && r.r > k.l && r.t < k.b && r.b > k.t)) cands.push({ x, y });
+        }
       }
-      if (!best) { dock(true); return; } // 자리가 모자라면 모아 두기
-      chosen.push(best);
-      cands.splice(cands.indexOf(best), 1);
-    }
+      const chosen = [];
+      for (let i = 0; i < chips.length; i++) {
+        let best = null, bestScore = -Infinity;
+        for (const c of cands) {
+          const cx = c.x + cw / 2, cy = c.y + ch / 2;
+          let d = chosen.length ? Infinity : 0;
+          for (const o of chosen) d = Math.min(d, Math.hypot(cx - o.x - cw / 2, (cy - o.y - ch / 2) * 1.6));
+          if (chosen.length && d < cw * 0.55 + 40) continue; // 서로 너무 붙지 않게
+          // 서로 고르게 퍼지되, 원에서 멀어질수록 감점
+          const score = Math.min(d, cw * 1.6) - Math.hypot(cx - sc.x, (cy - sc.y) * 1.2) * 0.55 + Math.random() * 6;
+          if (score > bestScore) { bestScore = score; best = c; }
+        }
+        if (!best) return null;
+        chosen.push(best);
+        cands.splice(cands.indexOf(best), 1);
+      }
+      return chosen;
+    };
+    const chosen = layout(true) || layout(false);
+    if (!chosen) { dock(true); return; } // 자리가 모자라면 모아 두기
     chips.forEach((c, i) => { c.style.left = `${chosen[i].x}px`; c.style.top = `${chosen[i].y}px`; });
   }
 

@@ -115,7 +115,15 @@ viewport.addEventListener('pointermove', (e) => {
 });
 function endDrag(e) {
   if (!drag || e.pointerId !== drag.id) return;
-  if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 6) guest.close(); // 빈 풀밭을 톡 누르면 닫힘
+  if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 6) {
+    if (plant.picking) { // 심을 자리 고르기: 누른 곳에 새싹을 심음
+      const r = viewport.getBoundingClientRect();
+      drag = null; viewport.classList.remove('is-dragging');
+      plant.pickAt(e.clientX - r.left, e.clientY - r.top);
+      return;
+    }
+    guest.close(); // 빈 풀밭을 톡 누르면 닫힘
+  }
   drag = null;
   viewport.classList.remove('is-dragging');
   if (!reducedMotion) glide();
@@ -180,10 +188,13 @@ const seeds = new SeedField($('seeds'), {
 /* ───────── 03 씨앗 심기 · 이름 붙이기 ───────── */
 const plant = new PlantScene({
   viewport, world, reducedMotion, setZoom,
+  minY: WORLD.horizon + 140,
   getCam: () => ({ x: cam.x, y: cam.y, s: view.s }),
   // 이름을 붙이면 04 성장 미션으로 (sprout = { name, image, x, y, plantedAt })
   onDone: (sprout) => grow.start(sprout),
 });
+
+$('pickCancel').addEventListener('click', () => plant.cancelPick());
 
 /* ───────── 04 성장 미션 ───────── */
 const grow = new GrowScene({

@@ -37,17 +37,65 @@ export class PlantScene {
 
   get active() { return this.busy; }
 
-  /** 씨앗을 고른 순간 호출. x, y는 터진 씨앗의 화면 좌표 */
-  async start({ x, y, image, size }) {
-    if (this.busy) return;
+  get picking() { return !!this.pick; }
+
+  /** 씨앗을 고른 순간 호출 → 사용자가 풀밭에서 심을 자리를 고르는 모드로 */
+  start({ x, y, image, size }) {
+    if (this.busy || this.pick) return;
+    this.pick = { x, y, image, size };
+    this.returnFocus = document.activeElement;
+    const ghost = $('pickGhost');
+    ghost.src = image;
+    ghost.style.width = `${Math.round(size * 0.64)}px`;
+    ghost.classList.remove('is-on');
+    document.body.classList.add('is-picking');
+    $('pickHint').hidden = false;
+    this._move = (e) => {
+      const r = this.viewport.getBoundingClientRect();
+      const px = e.clientX - r.left, py = e.clientY - r.top;
+      ghost.style.transform = `translate(${px}px, ${py}px)`;
+      ghost.classList.add('is-on');
+      ghost.classList.toggle('is-bad', !this.canPlant(py));
+    };
+    this._key = (e) => { if (e.key === 'Escape') this.cancelPick(); };
+    this.viewport.addEventListener('pointermove', this._move);
+    window.addEventListener('keydown', this._key);
+  }
+
+  // 하늘·먼 언덕 말고 풀밭 위에만 심을 수 있음
+  canPlant(py) {
+    const cam = this.getCam();
+    return cam.y + py / (cam.s || 1) >= (this.minY ?? 0);
+  }
+
+  endPick() {
+    this.viewport.removeEventListener('pointermove', this._move);
+    window.removeEventListener('keydown', this._key);
+    $('pickGhost').classList.remove('is-on', 'is-bad');
+    $('pickHint').hidden = true;
+    document.body.classList.remove('is-picking');
+    const p = this.pick; this.pick = null;
+    return p;
+  }
+
+  cancelPick() {
+    if (!this.pick) return;
+    this.endPick();
+    this.returnFocus?.focus?.({ preventScroll: true });
+  }
+
+  /** 풀밭을 톡 누른 자리(뷰포트 좌표)에 심기 */
+  async pickAt(px, py) {
+    if (!this.pick || this.busy) return false;
+    if (!this.canPlant(py)) {
+      const h = $('pickHint'); h.classList.remove('is-shake'); void h.offsetWidth; h.classList.add('is-shake');
+      return true;
+    }
+    const { x, y, image, size } = this.endPick();
     this.busy = true;
     this.image = image;
-    this.returnFocus = document.activeElement;
     document.body.classList.add('is-planting');
-
-    // 새싹이 떨어질 자리: 화면 가로 가운데, 세로 64% 지점 (항상 풀밭 위)
-    const vw = this.viewport.clientWidth, vh = this.viewport.clientHeight;
-    const land = { x: vw / 2 + (x - vw / 2) * 0.25, y: vh * 0.64 };
+    const land = { x: px, y: py };
     const cam = this.getCam();
     this.spot = { x: cam.x + land.x / (cam.s || 1), y: cam.y + land.y / (cam.s || 1) };
 
@@ -57,6 +105,7 @@ export class PlantScene {
     this.setZoom(1.45, this.spot.x, this.spot.y, this.reducedMotion ? 0 : 900);
     await wait(this.reducedMotion ? 0 : 650);
     this.openCard();
+    return true;
   }
 
   // 터진 자리에서 땅까지 포물선으로 떨어짐

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=1117b">
 </head>
 <body>
 <div class="app">
@@ -41,6 +41,11 @@
       <p>떠다니는 씨앗을 눌러<br>이 풀밭의 첫 번째 꽃을 피워보세요</p>
     </section>
 
+    <img class="pick-ghost" id="pickGhost" alt="" aria-hidden="true">
+    <div class="pick-hint" id="pickHint" role="status" hidden>
+      <span>🌱 새싹을 심을 자리를 풀밭에서 눌러주세요</span>
+      <button type="button" class="pick-cancel" id="pickCancel">취소</button>
+    </div>
     <p class="hint-pill">드래그로 둘러보고 휠로 확대·축소, 떠다니는 씨앗을 눌러보세요</p>
 
     <!-- 03 씨앗 심기 · 이름 붙이기 -->
@@ -131,6 +136,6 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </main>
 </div>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=1117b"></script>
 </body>
 </html>
