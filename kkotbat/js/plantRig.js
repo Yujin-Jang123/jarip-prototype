@@ -69,11 +69,17 @@ const BLOOM = [
 // 꽃 색: 산뜻하고 따뜻한 6색 [r, g, b]
 // 꽃 색: 꽃 가운데(inner) → 꽃잎 끝(outer)으로 번지는 그라디언트 6가지
 export const PALETTE = [
-  { name: '선셋', inner: [255, 222, 150], outer: [255, 104, 146] },
-  { name: '피치', inner: [255, 236, 196], outer: [255, 140, 96] },
-  { name: '레몬', inner: [255, 251, 196], outer: [255, 196, 30] },
-  { name: '체리블라썸', inner: [255, 232, 244], outer: [255, 100, 170] },
-  { name: '오션', inner: [212, 240, 255], outer: [64, 146, 255] },
+  { name: '선셋',      inner: [255, 224, 150], outer: [255, 96, 120] },
+  { name: '피치',      inner: [255, 238, 200], outer: [255, 132, 72] },
+  { name: '레몬',      inner: [255, 252, 200], outer: [255, 196, 20] },
+  { name: '체리블라썸', inner: [255, 232, 244], outer: [255, 92, 168] },
+  { name: '오션',      inner: [212, 240, 255], outer: [52, 132, 255] },
+  { name: '미드나잇',   inner: [120, 116, 140], outer: [18, 16, 26], dark: true },
+  { name: '스카이',     inner: [236, 250, 255], outer: [96, 200, 255] },
+  { name: '루비',      inner: [255, 190, 170], outer: [214, 18, 46] },
+  { name: '선플라워',   inner: [255, 244, 170], outer: [255, 150, 0] },
+  { name: '네이비',     inner: [170, 196, 255], outer: [28, 48, 150], dark: true },
+  { name: '코랄화이트', inner: [255, 255, 255], outer: [255, 170, 150] },
 ];
 
 const pick = (arr, missionIndex) => arr[missionIndex % arr.length];
@@ -128,7 +134,6 @@ export function tinted(key, colorIndex) {
     let sumL = 0, cnt = 0;
     for (let i = 0; i < px.length; i += 64) if (px[i + 3] > 128) { sumL += hsl(px[i] / 255, px[i + 1] / 255, px[i + 2] / 255)[2]; cnt++; }
     const pale = cnt && sumL / cnt > 0.82;
-    const dim = pale ? 0.8 : 1;
     for (let i = 0; i < px.length; i += 4) {
       if (px[i + 3] < 8) continue;
       const r = px[i] / 255, g = px[i + 1] / 255, b = px[i + 2] / 255;
@@ -144,10 +149,16 @@ export function tinted(key, colorIndex) {
         const tg = (pal.inner[1] + (pal.outer[1] - pal.inner[1]) * e) / 255;
         const tb = (pal.inner[2] + (pal.outer[2] - pal.inner[2]) * e) / 255;
         const [H, S, tl] = hsl(tr, tg, tb);
-        // 원래 그림(수국)의 밝기·채도를 그대로 살리고 색상만 바꿈 → 맑고 선명하게
+        // 원래 그림의 명암(광택·그림자)을 살리고 색만 입힘 → 수국처럼 맑고 입체적으로
         const o = hsl(r, g, b);
-        const l = Math.min(0.95, (L * 0.8 + tl * 0.2 + 0.06) * dim);
-        out = fromHsl(H, pale ? 0.97 : Math.min(1, Math.max(o[1], 0.82) * Math.min(1, S + 0.1)), l);
+        let srcL = L, sat;
+        if (pale) { srcL = Math.max(0.3, Math.min(0.95, 0.42 + (L - 0.62) * 1.35)); sat = 0.9; } // 하얀 꽃: 명암 대비를 키움
+        else sat = Math.min(1, Math.max(o[1], 0.82) * Math.min(1, S + 0.1));
+        const w = pal.dark ? 0.72 : 0.22;
+        let l = srcL * (1 - w) + tl * w + (pal.dark ? 0 : 0.05);
+        if (pal.dark) sat *= 0.55;
+        l = Math.min(0.95, Math.max(0.05, l));
+        out = fromHsl(H, sat, l);
       }
       px[i] = out[0]; px[i + 1] = out[1]; px[i + 2] = out[2];
     }
@@ -187,7 +198,8 @@ export async function renderRig(rig, seq, sproutSrc, size, changed = -1) {
   const sx = (part.sx || 1) * sx1, sy = sy1;
   const bw = part.w, bh = bw * info.r * sy;
 
-  const bloom = stage >= 3 ? pick(BLOOM, seq[2]) : [];
+  // 꽃 모양 · 색은 고른 미션 전체 순서로 정해짐 → 조합마다 다양하게
+  const bloom = stage >= 3 ? BLOOM[(seq[2] + seq[0] * 3 + seq[1] * 7) % BLOOM.length] : [];
   const anchor = part.flip ? 1 - info.x : info.x;
   const tipX = ((part.flip ? 1 - (info.tipX ?? 0.5) : (info.tipX ?? 0.5)) - anchor) * bw * sx;
   const tipY = bh * (info.tipY ?? 0.9);
@@ -199,7 +211,7 @@ export async function renderRig(rig, seq, sproutSrc, size, changed = -1) {
   const k = u * Math.min(1, 300 / total);
 
   // 새 모습에 필요한 이미지를 먼저 모두 준비 → 준비가 끝난 순간 몸체·꽃·통통 모션·빛이 한꺼번에 시작
-  const color = stage >= 4 ? seq[3] % PALETTE.length : 'white';
+  const color = stage >= 4 ? (seq[3] * 5 + seq[2] * 3 + seq[1] * 2 + seq[0]) % PALETTE.length : 'white';
   if (stage >= 2) prewarm();
   const [, srcs] = await Promise.all([
     loadImg(P + part.img + '.webp'),
