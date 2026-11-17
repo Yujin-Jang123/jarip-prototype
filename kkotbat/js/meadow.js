@@ -336,6 +336,9 @@ async function paintLayer(ctx, W, H, layer, ridge, nextRidge, r, noise, budget) 
  * @param {HTMLCanvasElement} canvas
  * @param {{width:number,height:number,horizon:number,seed?:number}} opts
  */
+// 맨 뒤 풀밭 능선의 높이(월드 y) — 꽃을 심을 수 있는 가장 위쪽 선. paintMeadow가 채움
+export let grassTop = null;
+
 export async function paintMeadow(canvas, { width: W, height: H, horizon, seed = 21 }) {
   const dpr = window.devicePixelRatio || 1;
   const scale = Math.min(dpr, Math.sqrt(12e6 / (W * H)), 2);
@@ -352,6 +355,7 @@ export async function paintMeadow(canvas, { width: W, height: H, horizon, seed =
   paintFarHills(ctx, W, horizon, r);
 
   const ridges = LAYERS.map((l) => makeRidge(r, horizon + l.base, l.amp, l.wave));
+  grassTop = ridges[0];
   for (let i = 0; i < LAYERS.length; i++) {
     await paintLayer(ctx, W, H, LAYERS[i], ridges[i], ridges[i + 1], r, noise, 12);
   }

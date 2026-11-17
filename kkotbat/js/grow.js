@@ -5,7 +5,7 @@
 // 미션을 누르면 원 안으로 날아들어가고, 그 즉시 새싹이 변한다.
 // 4개를 고르면 꽃이 피고 'kkotbat:bloomed' 이벤트로 05(개화)에 넘긴다.
 
-import { MISSIONS, SLOTS, renderRig } from './plantRig.js?v=1117j';
+import { MISSIONS, SLOTS, renderRig } from './plantRig.js?v=1117k';
 
 const $ = (id) => document.getElementById(id);
 const VISIBLE = 8;

@@ -55,7 +55,7 @@ export class PlantScene {
       const px = e.clientX - r.left, py = e.clientY - r.top;
       ghost.style.transform = `translate(${px}px, ${py}px)`;
       ghost.classList.add('is-on');
-      ghost.classList.toggle('is-bad', !this.canPlant(py));
+      ghost.classList.toggle('is-bad', !this.canPlant(px, py));
     };
     this._key = (e) => { if (e.key === 'Escape') this.cancelPick(); };
     this.viewport.addEventListener('pointermove', this._move);
@@ -63,9 +63,9 @@ export class PlantScene {
   }
 
   // 하늘·먼 언덕 말고 풀밭 위에만 심을 수 있음
-  canPlant(py) {
-    const cam = this.getCam();
-    return cam.y + py / (cam.s || 1) >= (this.minY ?? 0);
+  canPlant(px, py) {
+    const cam = this.getCam(), k = cam.s || 1;
+    return this.canPlantAt(cam.x + px / k, cam.y + py / k);
   }
 
   endPick() {
@@ -87,7 +87,7 @@ export class PlantScene {
   /** 풀밭을 톡 누른 자리(뷰포트 좌표)에 심기 */
   async pickAt(px, py) {
     if (!this.pick || this.busy) return false;
-    if (!this.canPlant(py)) {
+    if (!this.canPlant(px, py)) {
       const h = $('pickHint'); h.classList.remove('is-shake'); void h.offsetWidth; h.classList.add('is-shake');
       return true;
     }

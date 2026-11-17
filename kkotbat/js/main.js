@@ -1,14 +1,14 @@
-import { paintMeadow } from './meadow.js?v=1117j';
-import { SeedField } from './seeds.js?v=1117j';
-import { store } from './store.js?v=1117j';
-import { PlantScene } from './plant.js?v=1117j';
-import { GrowScene } from './grow.js?v=1117j';
-import { BloomScene } from './bloom.js?v=1117j';
-import { FlowerField } from './field.js?v=1117j';
-import { GuestbookPanel } from './guestbook.js?v=1117j';
-import { Butterflies } from './butterflies.js?v=1117j';
-import { Bees } from './bees.js?v=1117j';
-import { Ladybugs } from './ladybugs.js?v=1117j';
+import { paintMeadow, grassTop } from './meadow.js?v=1117k';
+import { SeedField } from './seeds.js?v=1117k';
+import { store } from './store.js?v=1117k';
+import { PlantScene } from './plant.js?v=1117k';
+import { GrowScene } from './grow.js?v=1117k';
+import { BloomScene } from './bloom.js?v=1117k';
+import { FlowerField } from './field.js?v=1117k';
+import { GuestbookPanel } from './guestbook.js?v=1117k';
+import { Butterflies } from './butterflies.js?v=1117k';
+import { Bees } from './bees.js?v=1117k';
+import { Ladybugs } from './ladybugs.js?v=1117k';
 
 // 풀밭(월드) 크기와 지평선 높이
 const WORLD = { width: 3200, height: 2000, horizon: 620 };
@@ -189,7 +189,11 @@ const seeds = new SeedField($('seeds'), {
 /* ───────── 03 씨앗 심기 · 이름 붙이기 ───────── */
 const plant = new PlantScene({
   viewport, world, reducedMotion, setZoom,
-  minY: WORLD.horizon + 140,
+  // 풀밭 위라면 맨 뒤 언덕 능선 바로 아래부터, 꽃밭 끝 언저리까지 심을 수 있음
+  canPlantAt: (x, y) => {
+    const top = grassTop ? grassTop(x) + 24 : WORLD.horizon + 60;
+    return y >= top && y <= WORLD.height - 40 && x >= 70 && x <= WORLD.width - 70;
+  },
   getCam: () => ({ x: cam.x, y: cam.y, s: view.s }),
   // 이름을 붙이면 04 성장 미션으로 (sprout = { name, image, x, y, plantedAt })
   onDone: (sprout) => grow.start(sprout),
